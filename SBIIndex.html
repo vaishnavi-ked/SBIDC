@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Rack Monitoring System</title>
+    <!-- Custom fonts for this template-->
+    <link rel="stylesheet" type="text/css" href="Public/seatchart/jquery.seat-charts.css">
+    <link href="Public/vendor/fontawesomeFree/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link
+            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet" />
+    <!-- Custom styles for this template-->
+    <link href="Public/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="Public/css/custom.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="file:^rc/Public/dist/jquery.min.js"></script>
+         <script src="file:^rc/Public/seatchart/jquery.seat-charts.js"></script>
+   
+    <!--        <script type="text/javascript"-->
+    <!--                data-main="/module/bajaScript/rc/plugin/baja"-->
+    <!--                src="Public/vendor/requireJs/require.js"></script>-->
+</head>
+
+<body id="page-top" class="page-overview sidebar-toggled">
+<div id="widget" style="display:none;"></div>
+<!-- Page Wrapper -->
+<div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <div class="sidebar-brand d-flex align-items-center justify-content-center">
+            <img src="Public/img/SBI-Profile.png" alt="logo" />
+        </div>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0" />
+        <!-- Nav Item - Charts -->
+        <!-- <li class="nav-item ">
+            <a class="nav-link" href="overview.html">
+                <i class="fas fa-fw fa-chart-area"></i>
+                <span>Overview</span></a>
+        </li> -->
+        <!-- Nav Item - Dashboard -->
+        <!-- <li class="nav-item">
+            <a class="nav-link" href="capacity.html">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span> Dashboard</span></a>
+        </li> -->
+        <!-- <li class="nav-item">
+                                                          <a class="nav-link" href="water.html">
+                                                            <i class="fas fa-fw fa-table"></i>
+                                                            <span>Water Meter System</span></a
+                                                          >
+                                                        </li> -->
+        <li class="nav-item active">
+            <a class="nav-link" href="newform.html">
+                <i class="fa-solid fa-rectangle-list"></i>
+                <span>Form</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="index.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Rack Monitoring</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="report.html">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Reports And Trends</span></a>
+        </li>
+        <!-- <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="cooling.html">
+                <i class="fas fa-fw fa-map"></i>
+                <span>Cooling</span>
+            </a>
+        </li>
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="connectivity.html">
+                <i class="fas fa-fw fa-map"></i>
+                <span>Connectivity</span>
+            </a>
+        </li>
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="power-capacity.html">
+                <i class="fas fa-fw fa-map"></i>
+                <span>Power</span>
+            </a>
+        </li>
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="health-capacity.html">
+                <i class="fas fa-fw fa-map"></i>
+                <span>Health</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="index.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Energy Dashboard</span></a>
+        </li>
+        <li class="nav-item ">
+            <a class="nav-link" href="water.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Water Meter System</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="dashboard1.html">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span> Cold Room Temp</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="dashboard-FAS.html">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>Fire Alarm System</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="report.html">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Report Module</span>
+            </a>
+        </li> -->
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block" />
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+            <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+    </ul>
+    <!-- End of Sidebar -->
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <!-- Sidebar Toggle (Topbar) -->
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <!-- Topbar Navbar -->
+                <ul class="navbar-nav ml-auto">
+                    <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
+
+                    <!-- Nav Item - User Information -->
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#">
+                            <img class="img-scnd-logo" src="Public/img/kedlogo.png" />
+                        </a>
+                    </li>
+
+                    <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
+
+                    <!-- <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Supervisor</span>
+                            <img class="img-profile rounded-circle"
+                                src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                            aria-labelledby="userDropdown">
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Profile
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Settings
+                            </a>
+                            <a class="dropdown-item" href="#">
+                                <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Activity Log
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li> -->
+                </ul>
+            </nav>
+            <!-- End of Topbar -->
+            <!-- Begin Page Content -->
+            <div class="container-fluid">
+                <!-- Page Heading -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="m-0 font-weight-bold text-primary">
+                        Rack Monitoring System
+                    </h1>
+
+
+                    <div class="more-options-sec">
+                        <div class="floorSelect">
+                            <label>Select Floor</label>
+                            <select class="form-control" name="floor" id="floors">
+                                <!-- Options will be dynamically populated -->
+                            </select>
+                        </div>
+
+                        <div class="serverSelect">
+                            <label>Select Server</label>
+                            <select class="form-control" name="server" id="servers">
+                                <!-- Options will be dynamically populated -->
+                            </select>
+                        </div>
+                        <!-- <div class="more">
+                            <button id="more-btn" class="more-btn">
+                                <span class="more-dot"></span>
+                                <span class="more-dot"></span>
+                                <span class="more-dot"></span>
+                            </button>
+                            <div class="more-menu">
+                                <div class="more-menu-caret">
+                                    <div class="more-menu-caret-outer"></div>
+                                    <div class="more-menu-caret-inner"></div>
+                                </div>
+                                <ul class="more-menu-items" tabindex="-1" role="menu" aria-labelledby="more-btn" aria-hidden="true">
+
+                                    <li class="more-menu-item" role="presentation">
+                                        <a href="energy.html" class="more-menu-btn">Energy Dashboard</a>
+                                    </li>
+                                    <li class="more-menu-item" role="presentation">
+                                        <a href="build-capacity.html" class="more-menu-btn">Capacity Dashboard</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div> -->
+                    </div>
+                    <!-- <a
+                href="#"
+                class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"
+                ><i class="fas fa-download fa-sm text-white-50"></i> Generate
+                Report</a
+                > -->
+                </div>
+                <!-- Content Row -->
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12">
+                        <div class="row">
+                            <div class="col-xl-9 col-lg-9">
+
+                                <div class="floorLayout">
+                                    <select id="dataTab" class="dataTab form-control">
+                                        <option data-action="zero" disabled="disabled" value="">-- Select option
+                                            for status --</option>
+                                        <option data-action="first" value="tempStatusLink"  selected>Temperature/Cooling Status
+                                        </option>
+                                        <option data-action="second" value="powerStatusLink">Power Status
+                                        </option>
+                                    </select>
+                                    </select> 
+                                    <div id="seat-map">
+                                        <!-- <div class="front-indicator">Front</div> -->
+                                        <div class="seat-map-rack" style="display: none;"></div>
+                                    </div>
+                                    <a href="#tempSts" class="btn btn-danger tempbtn btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </span>
+                                        <span class="text">Temperature Status Alert</span>
+                                    </a>
+                                    <a href="#powerSts" class="btn btn-danger powerbtn btn-icon-split">
+                                                <span class="icon text-white-50">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                </span>
+                                        <span class="text">Power Status Alert</span>
+                                    </a>
+                                </div>
+                               <div id="legend" class="seatCharts-legend">
+                                <ul class="seatCharts-legendList">
+                                    <li class="seatCharts-legendItem">
+                                        <div class="seatCharts-seat seatCharts-cell available high-class"></div>
+                                        <span class="seatCharts-legendDescription powerLegnd" id="highPowerLegend">Above 1000 W</span>
+                                        <span class="seatCharts-legendDescription tempLegnd" id="highTempLegend">Above 26°C</span>
+                                    </li>
+                                    <li class="seatCharts-legendItem">
+                                        <div class="seatCharts-seat seatCharts-cell available blue-class"></div>
+                                        <span class="seatCharts-legendDescription powerLegnd" id="normalPowerLegend">500 - 1000 W</span>
+                                        <span class="seatCharts-legendDescription tempLegnd" id="normalTempLegend">16-22°C</span>
+                                    </li>
+                                    <li class="seatCharts-legendItem">
+                                        <div class="seatCharts-seat seatCharts-cell available low-class"></div>
+                                        <span class="seatCharts-legendDescription powerLegnd" id="lowPowerLegend">100 - 500 W</span>
+                                        <span class="seatCharts-legendDescription tempLegnd" id="lowTempLegend">23-26°C</span>
+                                    </li>
+                                    <li class="seatCharts-legendItem">
+                                        <div class="seatCharts-seat seatCharts-cell available rack-class"></div>
+                                        <span class="seatCharts-legendDescription powerLegnd">Offline</span>
+                                        <span class="seatCharts-legendDescription tempLegnd">Offline</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            </div>
+                            <div class="col-xl-3 col-lg-3">
+                                <div class="booking-details">
+                                    <h2>Rack Details</h2>
+                                    <div class="rackData">
+                                        <table class="rackProperties" id="rackDetails">
+                                            <tbody>
+                                            <tr>
+                                                <th>Server Room Name: </th>
+                                                <td>XXXXXXX </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Power Capacity: </th>
+                                                <td> 0 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Alloted Power: </th>
+                                                <td> 0 </td>
+                                            </tr>
+                                            <!-- <tr>
+                                                <th>Available Power: </th>
+                                                <td> 0 </td>
+                                            </tr> -->
+                                            <tr class="bb1">
+                                                <th>Available Power:</th>
+                                                <td style="display: block;">0</td>
+                                            </tr>
+                                            <!-- <tr class="bb1">
+                                                <td>Devices :</td>
+                                                <td>122</td>
+                                            </tr> -->
+                                            <tr class="emptyRow"></tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="rackProperty" id="wholerack">
+                                            <tbody>
+                                            <tr>
+                                                <th>Rack Name: </th>
+                                                <td id="rackName"></td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>Application Name: </th>
+                                                <td id="appliName"> XXXXXX </td>
+                                            </tr>
+                                            <tr class="bb1">
+                                                <th>Ao Name:</th>
+                                                <td id="aoName" style="display: block;">XXXXXX</td>
+                                            </tr>
+                                            <!-- <tr class="bb1">
+                                                <td>Devices :</td>
+                                                <td>122</td>
+                                            </tr> -->
+                                            <tr class="emptyRow"></tr>
+                                            </tbody>
+                                        </table>
+                                        
+                                        <table class="rackProperty" id="powerStats">
+                                            <tbody>
+                                                <tr>
+                                                    <th>Power Status</th>
+                                                    <th></th>
+                                                </tr>
+                                                <tr>
+                                                    <td>Rated Power :</td>
+                                                    <td id="voltValue">120 Kw</td>
+                                                </tr>
+
+                                                <!-- Source 1 -->
+                                                <tr>
+                                                    <th>Source 1 :</th>
+                                                    <td id="powerValue"><a href="cabin.html"></a></td>
+                                                </tr>
+                                                <!-- Three-phase rows -->
+                                                <tr class="source1 three-phase">
+                                                    <td>R PH Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source1 three-phase">
+                                                    <td>Y PH Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source1 three-phase">
+                                                    <td>B PH Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source1 three-phase">
+                                                    <td>Total Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source1 three-phase">
+                                                    <td>kWh</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <!-- Single-phase rows -->
+                                                <tr class="source1 single-phase">
+                                                    <td>Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source1 single-phase">
+                                                    <td>kWh</td>
+                                                    <td>0</td>
+                                                </tr>
+
+                                                <!-- Source 2 -->
+                                                <tr>
+                                                    <th>Source 2 :</th>
+                                                    <td id="powerValue1"><a href="cabin.html"></a></td>
+                                                </tr>
+                                                <!-- Three-phase rows -->
+                                                <tr class="source2 three-phase">
+                                                    <td>R PH Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source2 three-phase">
+                                                    <td>Y PH Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source2 three-phase">
+                                                    <td>B PH Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source2 three-phase">
+                                                    <td>Total Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source2 three-phase">
+                                                    <td>kWh</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <!-- Single-phase rows -->
+                                                <tr class="source2 single-phase">
+                                                    <td>Kw</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="source2 single-phase">
+                                                    <td>kWh</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr class="emptyRow"></tr>
+                                            </tbody>
+                                        </table>
+
+                                        <table class="rackProperty" id="tempStats">
+                                            <tbody>
+                                            <tr>
+                                                <th>Temperature Status</th>
+                                                <th></th>
+                                            </tr>
+                                            <tr>
+                                                <th>Top Level</th>
+                                            </tr>
+                                            <tr>
+                                                <td>Temperature :</td>
+                                                <td id="highTemp"><a href="cabin.html">19°C</a></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Medium Level</th>
+                                            </tr>
+                                            <tr>
+                                                <td>Temperature :</td>
+                                                <td id="midTemp"><a href="abin.html">19°C</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Humidity :</td>
+                                                <td id="midTempRh">17%</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Low Level</th>
+                                            </tr>
+                                            <tr>
+                                                <td>Temperature :</td>
+                                                <td id="lowTemp"><a href="cabin.html">19°C</a></td>
+                                            </tr>
+                                            <!-- <tr>
+                                                <td>Temperature 2 :</td>
+                                                <td>84°C</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Temperature 3 :</td>
+                                                <td>84°C</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Temperature 4 :</td>
+                                                <td>84°C</td>
+                                            </tr> -->
+                                            </tbody>
+                                        </table>
+                                        <!-- <h3> Selected Racks (<span id="counter">0</span>):</h3>
+                                        <ul id="selected-seats">
+                                        </ul>
+                                        Total: <b>kW<span id="total"></span></b>
+                                        <button class="checkout-button">View Rack Details &raquo;</button> -->
+
+                                    </div>
+                                    <!--<a href="cabin.html" class="btn btn-primary rackLink" >Explore Rack_<span class="rackName"></span> </a>-->
+
+                                    <!-- <a href="3dFloor.html" class="btn btn-primary">Change to Floor 3D Layout</a> -->
+
+                                    <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#flow">Flow Diagram of Power
+                                        Supply</button> -->
+
+                                </div>
+                            </div>
+                            <!-- <div class="col-xl-3 col-lg-3">
+                                <h2>Floor Details</h2>
+                                <div class="floor-details">
+                                    <table id="floorProperty">
+                                        <tbody>
+                                            <tr>
+                                                <th>Power Capacity: </th>
+                                                <td> 200 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Alloted Power: </th>
+                                                <td> 137 kW</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Available Power: </th>
+                                                <td> 100 Kw </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Actual Power: </th>
+                                                <td> 120 Kw </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Actual Available: </th>
+                                                <td> 123 Kw </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Rack Space Space Capacity: </th>
+                                                <td> 1235 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Alloted Rack Space : </th>
+                                                <td> 1.2 </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Rack Occupied: </th>
+                                                <td> 9012.08 kWh </td>
+                                            </tr>
+
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="powerStatus">
+                                <div id="panelConsmp" style="
+                                            width: 100%;
+                                            height: 400px;
+                                            background-color: #282828;
+                                            "></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Content Row -->
+            </div>
+            <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+        <!-- Footer -->
+        <footer class="sticky-footer bg-white">
+            <div class="container my-auto">
+                <div class="copyright text-center my-auto">
+                    <span>Designed And Developed By &copy Ked Technology</span>
+                </div>
+            </div>
+        </footer>
+        <!-- End of Footer -->
+    </div>
+    <!-- End of Content Wrapper -->
+</div>
+<div id="flow" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="Public/img/flow chart.png" class="img-responsive">
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Page Wrapper -->
+<!-- Scroll to Top Button-->
+<a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+</a>
+<!-- Resources -->
+          
+        
+          <script>
+  console.log("jQuery:", typeof jQuery); // should print "function"
+  console.log("SeatCharts:", typeof $.fn.seatCharts); // should print "function" if loaded correctly
+</script>
+        <script src="Public/vendor/bootstrap/js/bootstrap.min.js"></script>
+  
+    <script type="text/javascript">
+    var require = {
+      paths: {
+        //pointing nmodule at /module is a Niagara convention, allowing us to
+        //refer to module resources without having RequireJS get hung up on
+        //the use of absolute paths everywhere.
+        "nmodule": "/module",
+        "baja": "/module/bajaScript/rc/plugin/baja",
+        "bajaScript": "/module/bajaScript/rc",
+        "bajaux": "/module/bajaux/rc",
+        "lex": "/module/js/rc/lex/lexplugin",
+        "log": "/module/js/rc/log/logPlugin",
+        "css": "/module/js/com/tridium/js/ext/require/css",
+
+        "jquery": "/module/js/rc/jquery/jquery",
+        "Handlebars": "/module/js/rc/handlebars/handlebars",
+        "Promise": "/module/js/rc/bluebird/bluebird",
+
+        // these are runtime dependencies for require-handlebars-plugin
+        "hbs": "/module/js/rc/require-handlebars-plugin/hbs",
+        "i18nprecompile": "/module/js/rc/require-handlebars-plugin/hbs/i18nprecompile",
+        "json2": "/module/js/rc/require-handlebars-plugin/hbs/json2",
+        "underscore": "/module/js/rc/underscore/underscore"
+      },
+
+      hbs: {
+        disableI18n: true
+      }
+    }
+  </script>
+     <script type="text/javascript"
+          data-main="/module/sbidcnew/rc/sbidcnew.run.js"
+          src="http://localhost/module/js/com/tridium/js/ext/require/require.min.js"></script>
+           <script src="newMyWidget.js"></script>
+ <script>
+   // Check if jQuery is loaded
+if (typeof jQuery === 'undefined') {
+    throw new Error('jQuery is not loaded');
+}
+
+// Check if SeatCharts is loaded
+if (typeof $.fn.seatCharts === 'undefined') {
+    throw new Error('SeatCharts plugin is not loaded');
+}
+ </script>
+
+</body>
+
+</html>

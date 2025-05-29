@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Rack Monitoring System</title>
+    <!-- Custom fonts for this template-->
+    <link rel="stylesheet" type="text/css" href="Public/css/jquery.seat-charts.css">
+    <link href="Public/vendor/fontawesomeFree/css/all.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet" />
+    <!-- Custom styles for this template-->
+    <link href="Public/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="Public/css/custom.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="Public/vendor/pdf/jspdf.umd.min.js"></script>
+<script src="Public/vendor/pdf/jspdf.plugin.autotable.min.js"></script>
+<script src="Public/vendor/xlsx/xlsx.full.min.js"></script>
+<script src="Public/vendor/filesaver/FileSaver.min.js"></script>
+    <script type="text/javascript">
+        var require = {
+          paths: {
+            //pointing nmodule at /module is a Niagara convention, allowing us to
+            //refer to module resources without having RequireJS get hung up on
+            //the use of absolute paths everywhere.
+             "nmodule": "/module",
+            "baja": "/module/bajaScript/rc/plugin/baja",
+            "bajaScript": "/module/bajaScript/rc",
+            "bajaux": "/module/bajaux/rc",
+            "lex": "/module/js/rc/lex/lexplugin",
+            "log": "/module/js/rc/log/logPlugin",
+            "css": "/module/js/com/tridium/js/ext/require/css",
+
+            "jquery": "/module/js/rc/jquery/jquery",
+            "Handlebars": "/module/js/rc/handlebars/handlebars",
+            "Promise": "/module/js/rc/bluebird/bluebird",
+
+            // these are runtime dependencies for require-handlebars-plugin
+            "hbs": "/module/js/rc/require-handlebars-plugin/hbs",
+            "i18nprecompile": "/module/js/rc/require-handlebars-plugin/hbs/i18nprecompile",
+            "json2": "/module/js/rc/require-handlebars-plugin/hbs/json2",
+            "underscore": "/module/js/rc/underscore/underscore",
+            "dialogs": "/module/js/rc/dialogs/dialogs",
+            "jspdf": "/module/sbi/rc/Public/vendor/pdf/jspdf.umd.min",
+            "jspdf-autotable": "/module/sbi/rc/Public/vendor/pdf/jspdf.plugin.autotable.min",
+            "am5": "/module/sbi/rc/Public/vendor/amachart/index",
+            "am5xy": "/module/sbi/rc/Public/vendor/amachart/xy",
+            "am5themes": "/module/sbi/rc/Public/vendor/amachart/themes/animated",
+            "xlsx": "/module/sbi/rc/Public/vendor/xlsx/xlsx.full.min",
+            "filesaver": "/module/sbi/rc/Public/vendor/filesaver/FileSaver.min"
+          },
+
+          hbs: {
+            disableI18n: true
+          },
+          shim: {
+            "jspdf": {
+            imports: "jspdf"  // Explicitly tell RequireJS about the global
+        },
+        "jspdf-autotable": {
+          deps: ["jspdf"],
+            imports: "jspdfAutotabl"
+        },
+        "am5": {
+          exports: "am5"
+        },
+        "am5xy": {
+          deps: ["am5"],
+          exports: "am5xy"
+        },
+        "am5themes": {
+          deps: ["am5"],
+          exports: "am5themes_Animated"
+        }
+      }
+        };
+    </script>
+    <script type="text/javascript"
+            data-main="/module/sbi/rc/sbi.run.js"
+            src="http://localhost/module/js/com/tridium/js/ext/require/require.min.js"></script>
+</head>
+
+<body>
+<div id="widget" style="display:none;"></div>
+<h2>Custom Monthly Line Chart with Downloadable Report</h2>
+
+<div class="controls">
+  <label>Start Date: <input type="date" id="startDate" /></label>
+  <label>End Date: <input type="date" id="endDate" /></label>
+  <label>Format:
+    <select id="format">
+      <option value="pdf">PDF</option>
+      <option value="xlsx">Excel</option>
+      <option value="csv">CSV</option>
+    </select>
+  </label>
+  <button id="downloadBtn">Download Report</button>
+</div>
+<div id="chartdiv" style="width: 100%; height: 500px;"></div>
+
+
+<script src="Public/vendor/amchart/index.js"></script>
+<script src="Public/vendor/amchart/xy.js"></script>
+<script src="Public/vendor/amchart/themes/animated.js"></script>
+
+<!--<script src="Public/vendor/pdf/jspdf.umd.min.js"></script>-->
+<!--<script src="Public/vendor/pdf/jspdf.plugin.autotable.min.js"></script>-->
+
+
+<script>
+
+// require(['baja!'], function(baja) {
+//     // Global variables
+//     let powerChart;
+//     let racksChart;
+//     let root;
+//     let powerSeries = {};
+//     let racksSeries = {};
+//     let rawData = {};
+//     let dailyData = {};
+//     let isDailyView = true;
+
+//     // Initialize charts with empty data
+//     function initCharts() {
+//         try {
+//             // Initialize Power Consumption Chart
+//             const powerRoot = am5.Root.new("powerChart");
+//             powerChart = powerRoot.container.children.push(am5xy.XYChart.new(powerRoot, {
+//                 panX: true, panY: true, wheelX: "panX", wheelY: "zoomX", pinchZoomX: true
+//             }));
+
+//             const powerXAxis = powerChart.xAxes.push(am5xy.DateAxis.new(powerRoot, {
+//                 baseInterval: { timeUnit: "day", count: 1 },
+//                 renderer: am5xy.AxisRendererX.new(powerRoot, {}),
+//                 tooltip: am5.Tooltip.new(powerRoot, {}),
+//                 dateFormats: {
+//                     day: "MMM dd",
+//                     week: "MMM dd",
+//                     month: "MMM yyyy",
+//                     year: "yyyy"
+//                 }
+//             }));
+
+//             const powerYAxis = powerChart.yAxes.push(am5xy.ValueAxis.new(powerRoot, {
+//                 renderer: am5xy.AxisRendererY.new(powerRoot, {}),
+//                 tooltip: am5.Tooltip.new(powerRoot, {}),
+//                 title: am5.Label.new(powerRoot, {
+//                     text: "Power Consumption (kW)",
+//                     rotation: -90,
+//                     y: am5.p50,
+//                     centerX: am5.p50
+//                 })
+//             }));
+
+//             // Create series for each server hall
+//             const powerColors = ["#3f51b5", "#f44336", "#4caf50", "#ff9800"];
+//             for (let i = 1; i <= 4; i++) {
+//                 powerSeries[`hall${i}`] = powerChart.series.push(am5xy.LineSeries.new(powerRoot, {
+//                     name: `Server Hall ${i}`,
+//                     xAxis: powerXAxis,
+//                     yAxis: powerYAxis,
+//                     valueYField: `value${i}`,
+//                     valueXField: "date",
+//                     tooltip: am5.Tooltip.new(powerRoot, { 
+//                         labelText: "Server Hall {name}\n{valueY} kW\n{date.format('MMM dd, yyyy')}"
+//                     }),
+//                     stroke: am5.color(powerColors[i-1]),
+//                     fill: am5.color(powerColors[i-1])
+//                 }));
+//                 powerSeries[`hall${i}`].data.setAll([]);
+//             }
+
+//             powerChart.set("cursor", am5xy.XYCursor.new(powerRoot, {}));
+//             powerChart.set("scrollbarX", am5.Scrollbar.new(powerRoot, { orientation: "horizontal" }));
+            
+//             const powerLegend = powerChart.children.push(am5.Legend.new(powerRoot, { centerX: am5.p50, x: am5.p50 }));
+//             powerLegend.data.setAll(powerChart.series.values);
+
+//             // Initialize Racks Chart
+//             const racksRoot = am5.Root.new("racksChart");
+//             racksChart = racksRoot.container.children.push(am5xy.XYChart.new(racksRoot, {
+//                 panX: true, panY: true, wheelX: "panX", wheelY: "zoomX", pinchZoomX: true
+//             }));
+
+//             const racksXAxis = racksChart.xAxes.push(am5xy.DateAxis.new(racksRoot, {
+//                 baseInterval: { timeUnit: "day", count: 1 },
+//                 renderer: am5xy.AxisRendererX.new(racksRoot, {}),
+//                 tooltip: am5.Tooltip.new(racksRoot, {}),
+//                 dateFormats: {
+//                     day: "MMM dd",
+//                     week: "MMM dd",
+//                     month: "MMM yyyy",
+//                     year: "yyyy"
+//                 }
+//             }));
+
+//             const racksYAxis = racksChart.yAxes.push(am5xy.ValueAxis.new(racksRoot, {
+//                 renderer: am5xy.AxisRendererY.new(racksRoot, {}),
+//                 tooltip: am5.Tooltip.new(racksRoot, {}),
+//                 title: am5.Label.new(racksRoot, {
+//                     text: "Number of Racks",
+//                     rotation: -90,
+//                     y: am5.p50,
+//                     centerX: am5.p50
+//                 })
+//             }));
+
+//             // Create series for each server hall
+//             const racksColors = ["#9c27b0", "#e91e63", "#009688", "#795548"];
+//             for (let i = 1; i <= 4; i++) {
+//                 racksSeries[`hall${i}`] = racksChart.series.push(am5xy.LineSeries.new(racksRoot, {
+//                     name: `Server Hall ${i}`,
+//                     xAxis: racksXAxis,
+//                     yAxis: racksYAxis,
+//                     valueYField: `value${i}`,
+//                     valueXField: "date",
+//                     tooltip: am5.Tooltip.new(racksRoot, { 
+//                         labelText: "Server Hall {name}\n{valueY} racks\n{date.format('MMM dd, yyyy')}"
+//                     }),
+//                     stroke: am5.color(racksColors[i-1]),
+//                     fill: am5.color(racksColors[i-1])
+//                 }));
+//                 racksSeries[`hall${i}`].data.setAll([]);
+//             }
+
+//             racksChart.set("cursor", am5xy.XYCursor.new(racksRoot, {}));
+//             racksChart.set("scrollbarX", am5.Scrollbar.new(racksRoot, { orientation: "horizontal" }));
+            
+//             const racksLegend = racksChart.children.push(am5.Legend.new(racksRoot, { centerX: am5.p50, x: am5.p50 }));
+//             racksLegend.data.setAll(racksChart.series.values);
+
+//         } catch (e) {
+//             console.error("Error in initCharts:", e);
+//         }
+//     }
+    
+//     function findAllHistoricalPoints() {
+//         const query = `local:|fox:|station:|slot:/|bql:select id,type,class,slotPath,toString from history:HistoryConfig where id matches '/sbi/SVR[0-9]+'`;
+        
+//         return new Promise((resolve, reject) => {
+//             const points = [];
+//             baja.Ord.make(query)
+//                 .get({
+//                     cursor: {
+//                         each: function(row) {
+//                             points.push({
+//                                 id: row.get('id'),
+//                                 path: row.get('slotPath')
+//                             });
+//                         },
+//                         after: function() {
+//                             resolve(points);
+//                         }
+//                     }
+//                 })
+//                 .catch(reject);
+//         });
+//     }
+
+//     function fetchDataForHall(hallNumber, pointName, slotPath) {
+//         const startDate = document.getElementById("startDate").value;
+//         const endDate = document.getElementById("endDate").value;
+        
+//         if (!startDate || !endDate) {
+//             alert("Please select both start and end dates");
+//             return Promise.reject("Dates not selected");
+//         }
+        
+//         isDailyView = startDate === endDate;
+        
+//         return new Promise((resolve, reject) => {
+//             try {
+//                 const query = isDailyView 
+//                     ? `local:|fox:|history:${pointName}?period=timeRange;start=${startDate}T23:59:00.000+05:30;end=${startDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`
+//                     : `local:|fox:|history:${pointName}?period=timeRange;start=${startDate}T00:00:00.000+05:30;end=${endDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`;
+                
+//                 baja.Ord.make(query)
+//                     .get({
+//                         cursor: {
+//                             each: function(row) { 
+//                                 const timestamp = new Date(row.get('timestamp'));
+//                                 const value = parseFloat(row.get('value'));
+                                
+//                                 if (!rawData[`hall${hallNumber}`]) {
+//                                     rawData[`hall${hallNumber}`] = [];
+//                                 }
+                                
+//                                 rawData[`hall${hallNumber}`].push({
+//                                     datetime: timestamp,
+//                                     value: value
+//                                 });
+                                
+//                                 if (isDailyView) {
+//                                     if (!dailyData[`hall${hallNumber}`]) {
+//                                         dailyData[`hall${hallNumber}`] = [];
+//                                     }
+//                                     dailyData[`hall${hallNumber}`].push({
+//                                         date: timestamp.getTime(),
+//                                         value: value
+//                                     });
+//                                 }
+//                             },
+//                             after: function() {
+//                                 if (!isDailyView) {
+//                                     // Process raw data into daily values (last value of each day)
+//                                     const groupedByDate = {};
+                                    
+//                                     rawData[`hall${hallNumber}`].forEach(item => {
+//                                         const dateKey = new Date(item.datetime).toISOString().split('T')[0];
+//                                         groupedByDate[dateKey] = {
+//                                             date: dateKey,
+//                                             value: item.value,
+//                                             rawDatetime: item.datetime
+//                                         };
+//                                     });
+                                    
+//                                     dailyData[`hall${hallNumber}`] = Object.values(groupedByDate)
+//                                         .sort((a, b) => new Date(a.date) - new Date(b.date))
+//                                         .map(item => ({
+//                                             date: new Date(item.date).getTime(),
+//                                             value: item.value
+//                                         }));
+//                                 }
+//                                 resolve();
+//                             }
+//                         }
+//                     })
+//                     .catch(reject);
+//             } catch (e) {
+//                 reject(e);
+//             }
+//         });
+//     }
+
+//     function fetchAllData() {
+//         // Reset data structures
+//         rawData = {};
+//         dailyData = {};
+//         window.fullDailyData = {};
+        
+//         return findAllHistoricalPoints()
+//             .then(points => {
+//                 const fetchPromises = [];
+                
+//                 points.forEach(p => {
+//                     // Extract hall number from point ID (assuming format /sbi/SVRXX)
+//                     const hallNumberMatch = p.id.match(/\/sbi\/SVR(\d+)/);
+//                     if (hallNumberMatch) {
+//                         const hallNumber = parseInt(hallNumberMatch[1]);
+//                         if (hallNumber >= 1 && hallNumber <= 4) {
+//                             fetchPromises.push(fetchDataForHall(hallNumber, p.id, p.path));
+//                         }
+//                     }
+//                 });
+                
+//                 return Promise.all(fetchPromises);
+//             })
+//             .then(() => {
+//                 // Combine data from all halls into a single dataset for each chart
+//                 const combinedPowerData = [];
+//                 const combinedRacksData = [];
+                
+//                 // Find all unique dates across all halls
+//                 const allDates = new Set();
+//                 for (let i = 1; i <= 4; i++) {
+//                     if (dailyData[`hall${i}`]) {
+//                         dailyData[`hall${i}`].forEach(item => {
+//                             allDates.add(item.date);
+//                         });
+//                     }
+//                 }
+                
+//                 // Create combined data points
+//                 Array.from(allDates).sort().forEach(date => {
+//                     const powerDataPoint = { date: date };
+//                     const racksDataPoint = { date: date };
+                    
+//                     for (let i = 1; i <= 4; i++) {
+//                         const hallData = dailyData[`hall${i}`]?.find(item => item.date === date);
+//                         powerDataPoint[`value${i}`] = hallData ? hallData.value : null;
+//                         // For demo, racks count is power value divided by 10 - replace with actual data
+//                         racksDataPoint[`value${i}`] = hallData ? Math.round(hallData.value / 10) : null;
+//                     }
+                    
+//                     combinedPowerData.push(powerDataPoint);
+//                     combinedRacksData.push(racksDataPoint);
+//                 });
+                
+//                 // Update charts
+//                 for (let i = 1; i <= 4; i++) {
+//                     if (powerSeries[`hall${i}`]) {
+//                         powerSeries[`hall${i}`].data.setAll(combinedPowerData);
+//                     }
+//                     if (racksSeries[`hall${i}`]) {
+//                         racksSeries[`hall${i}`].data.setAll(combinedRacksData);
+//                     }
+//                 }
+                
+//                 // Store full data for reports
+//                 window.fullDailyData = combinedPowerData.map((powerPoint, index) => {
+//                     const point = {
+//                         date: new Date(powerPoint.date),
+//                         s1: powerPoint.value1,
+//                         s2: powerPoint.value2,
+//                         s3: powerPoint.value3,
+//                         s4: powerPoint.value4,
+//                         racks1: combinedRacksData[index].value1,
+//                         racks2: combinedRacksData[index].value2,
+//                         racks3: combinedRacksData[index].value3,
+//                         racks4: combinedRacksData[index].value4
+//                     };
+//                     return point;
+//                 });
+//             })
+//             .catch(err => {
+//                 console.error("Error fetching data:", err);
+//                 alert("Error fetching data: " + err.message);
+//             });
+//     }
+
+//     window.downloadReport = function() {
+//         const start = document.getElementById("startDate").value;
+//         const end = document.getElementById("endDate").value;
+//         const format = document.getElementById("format").value;
+//         const now = new Date();
+//         const nowStr = now.toISOString().split("T")[0];
+//         const baseName = "Server_Halls_Report";
+//         const logoURL = 'Public/img/kedlogo.png';
+
+//         if (!window.fullDailyData || window.fullDailyData.length === 0) {
+//             alert("No data available to download. Please fetch data first.");
+//             return;
+//         }
+
+//         let fileName = start && end
+//             ? `${baseName}_${nowStr}_(${start}_to_${end}).${format}`
+//             : `${baseName}_${nowStr}.${format}`;
+            
+//         const rows = window.fullDailyData.map(d => ({
+//             "Date & Time": d.date.toLocaleString('en-US', {
+//                 year: 'numeric',
+//                 month: '2-digit',
+//                 day: '2-digit',
+//                 hour: '2-digit',
+//                 minute: '2-digit',
+//                 hour12: true
+//             }).replace(/(\d+)\/(\d+)\/(\d+),?/, '$3-$1-$2'),
+//             "S1 (kW)": d.s1 ? d.s1.toFixed(3) : "N/A",
+//             "S2 (kW)": d.s2 ? d.s2.toFixed(3) : "N/A",
+//             "S3 (kW)": d.s3 ? d.s3.toFixed(3) : "N/A",
+//             "S4 (kW)": d.s4 ? d.s4.toFixed(3) : "N/A",
+//             "S1 Racks": d.racks1 || "N/A",
+//             "S2 Racks": d.racks2 || "N/A",
+//             "S3 Racks": d.racks3 || "N/A",
+//             "S4 Racks": d.racks4 || "N/A"
+//         }));
+
+//         if (format === "pdf") {
+//             try {
+//                 const { jsPDF } = window.jspdf;
+//                 const doc = new jsPDF();
+//                 const logo = new Image();
+                
+//                 logo.onload = function() {
+//                     // Add logo (top-left)
+//                     doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+//                     generatePdfContent(doc);
+//                 };
+                
+//                 logo.onerror = function() {
+//                     generatePdfContent(doc);
+//                 };
+//                 logo.src = logoURL;
+                
+//                 function generatePdfContent(doc) {
+//                     // Report title (centered)
+//                     doc.setFontSize(16);
+//                     const titleY = logo.complete ? 30 : 20;
+//                     doc.text(`Server Halls Monitoring Report`, 100, titleY, { align: "center" });
+                    
+//                     // Generation timestamp (right-aligned)
+//                     doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+//                     // Create the table - Power Consumption
+//                     doc.setFontSize(12);
+//                     doc.text("Power Consumption (kW)", 14, titleY + 20);
+//                     doc.autoTable({
+//                         startY: titleY + 25,
+//                         head: [["Date & Time", "S1", "S2", "S3", "S4"]],
+//                         body: rows.map(r => [r["Date & Time"], r["S1 (kW)"], r["S2 (kW)"], r["S3 (kW)"], r["S4 (kW)"]]),
+//                         styles: {
+//                             overflow: 'linebreak',
+//                             cellPadding: 3,
+//                             fontSize: 10,
+//                             halign: 'center',
+//                             valign: 'middle'
+//                         },
+//                         margin: { top: titleY + 25 }
+//                     });
+
+//                     // Create the table - Number of Racks
+//                     const lastTable = doc.lastAutoTable;
+//                     const finalY = lastTable.finalY + 10;
+                    
+//                     doc.setFontSize(12);
+//                     doc.text("Number of Racks", 14, finalY);
+//                     doc.autoTable({
+//                         startY: finalY + 5,
+//                         head: [["Date & Time", "S1", "S2", "S3", "S4"]],
+//                         body: rows.map(r => [r["Date & Time"], r["S1 Racks"], r["S2 Racks"], r["S3 Racks"], r["S4 Racks"]]),
+//                         styles: {
+//                             overflow: 'linebreak',
+//                             cellPadding: 3,
+//                             fontSize: 10,
+//                             halign: 'center',
+//                             valign: 'middle'
+//                         },
+//                         margin: { top: finalY + 5 }
+//                     });
+
+//                     doc.save(fileName);
+//                 }
+//             } catch (error) {
+//                 console.error("PDF generation error:", error);
+//                 alert("Failed to generate PDF. Please try another format.");
+//             }
+//         } else {
+//             try {
+//                 // For Excel/CSV
+//                 const exportData = window.fullDailyData.map(d => ({
+//                     "Date & Time": d.date.toLocaleString('en-US', {
+//                         year: 'numeric',
+//                         month: '2-digit',
+//                         day: '2-digit',
+//                         hour: '2-digit',
+//                         minute: '2-digit',
+//                         second: '2-digit',
+//                         hour12: true
+//                     }),
+//                     "S1 (kW)": d.s1 ? parseFloat(d.s1.toFixed(3)) : null,
+//                     "S2 (kW)": d.s2 ? parseFloat(d.s2.toFixed(3)) : null,
+//                     "S3 (kW)": d.s3 ? parseFloat(d.s3.toFixed(3)) : null,
+//                     "S4 (kW)": d.s4 ? parseFloat(d.s4.toFixed(3)) : null,
+//                     "S1 Racks": d.racks1 || null,
+//                     "S2 Racks": d.racks2 || null,
+//                     "S3 Racks": d.racks3 || null,
+//                     "S4 Racks": d.racks4 || null
+//                 }));
+
+//                 const worksheet = XLSX.utils.json_to_sheet(exportData);
+//                 const workbook = XLSX.utils.book_new();
+//                 XLSX.utils.book_append_sheet(workbook, worksheet, "Server Halls Data");
+                
+//                 const wbout = XLSX.write(workbook, {
+//                     bookType: format === "csv" ? "csv" : "xlsx",
+//                     type: "array"
+//                 });
+                
+//                 saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+//             } catch (error) {
+//                 console.error("Excel/CSV generation error:", error);
+//                 alert("Failed to generate Excel/CSV file.");
+//             }
+//         }
+//     };
+
+//     // Initialize the application
+//     function initializeApp() {
+//         // Set default dates (last 7 days)
+//         const endDate = new Date();
+//         const startDate = new Date();
+//         startDate.setDate(endDate.getDate() - 7);
+        
+//         document.getElementById("startDate").valueAsDate = startDate;
+//         document.getElementById("endDate").valueAsDate = endDate;
+        
+//         initCharts();
+        
+//         document.getElementById("downloadBtn").addEventListener("click", downloadReport);
+//         document.getElementById("fetchBtn").addEventListener("click", fetchAllData);
+//     }
+
+//     // Start the app
+//     if (document.readyState === 'complete' || document.readyState === 'interactive') {
+//         initializeApp();
+//     } else {
+//         document.addEventListener('DOMContentLoaded', initializeApp);
+//     }
+// });
+
+require(['baja!'], function(baja) {
+    // Global variables
+    let chart;
+    let root;
+    let series;
+    let rawData = [];
+    let dailyData = [];
+    let isDailyView = true;
+
+    // Initialize chart with empty data
+    function initChart() {
+        try {
+            root = am5.Root.new("chartdiv");
+            
+            chart = root.container.children.push(am5xy.XYChart.new(root, {
+                panX: true, panY: true, wheelX: "panX", wheelY: "zoomX", pinchZoomX: true
+            }));
+
+            const xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+                baseInterval: { timeUnit: "day", count: 1 },
+                renderer: am5xy.AxisRendererX.new(root, {}),
+                tooltip: am5.Tooltip.new(root, {}),
+                dateFormats: {
+                    day: "MMM dd",
+                    week: "MMM dd",
+                    month: "MMM yyyy",
+                    year: "yyyy"
+                }
+            }));
+
+            const yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+                renderer: am5xy.AxisRendererY.new(root, {}),
+                tooltip: am5.Tooltip.new(root, {}),
+                title: am5.Label.new(root, {
+                    text: "Power Consumption (kW)",
+                    rotation: -90,
+                    y: am5.p50,
+                    centerX: am5.p50
+                })
+            }));
+
+            series = chart.series.push(am5xy.LineSeries.new(root, {
+                name: "Power Consumption",
+                xAxis: xAxis,
+                yAxis: yAxis,
+                valueYField: "value",
+                valueXField: "date",
+                tooltip: am5.Tooltip.new(root, { 
+                    labelText: "{valueY} kW\n{date.format('MMM dd, yyyy')}"
+                }),
+                stroke: am5.color("#3f51b5"),
+                fill: am5.color("#3f51b5")
+            }));
+
+            chart.set("cursor", am5xy.XYCursor.new(root, {}));
+            chart.set("scrollbarX", am5.Scrollbar.new(root, { orientation: "horizontal" }));
+            
+            const legend = chart.children.push(am5.Legend.new(root, { centerX: am5.p50, x: am5.p50 }));
+            legend.data.setAll(chart.series.values);
+            
+            series.data.setAll([]);
+        } catch (e) {
+            console.error("Error in initChart:", e);
+        }
+    }
+    
+function findAllHistoricalPoints() {
+    const query = `local:|fox:|station:|slot:/|bql:select id,type,class,slotPath,toString from history:HistoryConfig`;
+    
+    return new Promise((resolve, reject) => {
+        const points = [];
+        baja.Ord.make(query)
+            .get({
+                cursor: {
+                    each: function(row) {
+                        points.push({
+                            id: row.get('id'),
+                            path: row.get('slotPath')
+                        });
+                    },
+                    after: function() {
+                        resolve(points);
+                    }
+                }
+            })
+            .catch(reject);
+    });
+}
+
+// Usage:
+findAllHistoricalPoints()
+    .then(points => {
+        console.log("Points with history:");
+        points.forEach(p => {
+  if (p.id == "/sbi/SVR01") {
+    let pointName = p.id;
+    let slotPath = p.path;
+    window.slotPath = slotPath;
+    fetchData(pointName,slotPath);
+    console.log(`${p.id}: ${p.path}`);
+  }
+});
+
+    })
+    .catch(err => console.error("Error:", err));
+
+    // Fetch data from Niagara - default to 11:29:00 PM values
+    function fetchData(pointName,slotPath) {
+      const historyPath = pointName;
+      console.log("point name " + historyPath);
+            console.log("Fetching data...");
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    
+    if (!startDate || !endDate) {
+        alert("Please select both start and end dates");
+        return;
+    }
+    
+    // Reset data arrays
+    window.rawData = [];
+    window.dailyData = [];
+    window.fullDailyData = []; // Add this for downloadReport
+    
+    isDailyView = startDate === endDate;
+    
+    try {
+        const query = isDailyView 
+            ? `local:|fox:|history:${historyPath}?period=timeRange;start=${startDate}T23:59:00.000+05:30;end=${startDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`
+            : `local:|fox:|history:${historyPath}?period=timeRange;start=${startDate}T00:00:00.000+05:30;end=${endDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`;
+                baja.Ord.make(query)
+                .get({
+                    cursor: {
+                        each: function(row) { 
+                            const timestamp = new Date(row.get('timestamp'));
+                            console.log("timestamp = " + timestamp);
+                            const value = parseFloat(row.get('value'));
+                            console.log("value = " + value);
+                            
+                            window.rawData.push({
+                                datetime: timestamp,
+                                value: value
+                            });
+                            if (isDailyView) {
+                            window.dailyData.push({
+                                date: timestamp.getTime(),
+                                value: value
+                            });
+                          }
+
+                            // window.dailyData.push({
+                            //     date: timestamp.getTime(),
+                            //     value: value
+                            // });
+                        }
+                    }
+                })
+                .then(() => {
+                    console.log("Processed daily data length:", window.dailyData.length);
+                    console.log("Raw Data:", JSON.stringify(window.rawData, null, 2));
+                    console.log("Daily Data:", JSON.stringify(window.dailyData, null, 2));
+                    if (!isDailyView) {
+                    // Process raw data into daily values (last value of each day)
+                    const groupedByDate = {};
+                    
+                    window.rawData.forEach(item => {
+                        const dateKey = new Date(item.datetime).toISOString().split('T')[0];
+                        groupedByDate[dateKey] = {
+                            date: dateKey,
+                            value: item.value,
+                            rawDatetime: item.datetime
+                        };
+                    });
+                    
+                    window.dailyData = Object.values(groupedByDate)
+                        .sort((a, b) => new Date(a.date) - new Date(b.date))
+                        .map(item => ({
+                            date: new Date(item.date).getTime(),
+                            value: item.value
+                        }));
+                    
+                    // Store full daily data for reports
+                    window.fullDailyData = Object.values(groupedByDate)
+                        .sort((a, b) => new Date(a.date) - new Date(b.date));
+                }
+                
+                console.log("Processed daily data length:", window.dailyData.length);
+                
+                if (series) {
+                    series.data.setAll(window.dailyData);
+                }
+
+                    if (series) {
+                        series.data.setAll(window.dailyData);
+                    }
+                })
+                .catch((err) => {
+                    console.error("Query failed:", err);
+                    alert("Error fetching data: " + err.message);
+                });
+        } catch (e) {
+            console.error("Error in fetchData:", e);
+            alert("An unexpected error occurred: " + e.message);
+        }
+    }
+
+    // function downloadReport() {
+    //     const start = document.getElementById("startDate").value;
+    //     const end = document.getElementById("endDate").value;
+    //     const format = document.getElementById("format").value;
+    //     const now = new Date();
+    //     const nowStr = now.toISOString().split("T")[0];
+    //     const baseName = "Power_Consumption";
+
+    //     // Ensure we have data to work with
+    //     if (!window.dailyData || window.dailyData.length === 0) {
+    //         alert("No data available to download. Please fetch data first.");
+    //         return;
+    //     }
+
+    //     let fileName = start && end
+    //         ? `${baseName}_${nowStr}_(${start}_to_${end}).${format}`
+    //         : `${baseName}_${nowStr}.${format}`;
+            
+    //     const logoURL = 'Public/img/kedlogo.png';
+
+    //     // Prepare data - always use date only (11:29 PM values)
+    //     const rows = window.dailyData.map(d => ({
+    //         Date: new Date(d.date).toLocaleDateString(),
+    //         Value: d.value
+    //     }));
+
+    //     if (format === "pdf") {
+    //         try {
+    //             const { jsPDF } = window.jspdf;
+    //             if (!jsPDF) throw new Error("jsPDF library not loaded");
+                
+    //             const doc = new jsPDF();
+    //             const logo = new Image();
+                
+    //             logo.onerror = () => {
+    //                 console.warn("Logo failed to load, continuing without it");
+    //                 generatePdfContent(doc);
+    //             };
+                
+    //             logo.src = logoURL;
+    //             logo.onload = () => {
+    //                 try {
+    //                     doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+    //                     generatePdfContent(doc);
+    //                 } catch (e) {
+    //                     console.error("Error adding logo:", e);
+    //                     generatePdfContent(doc);
+    //                 }
+    //             };
+                
+    //             function generatePdfContent(doc) {
+    //                 doc.setFontSize(14);
+    //                 doc.text(`Power Consumption Report`, 105, logo.complete ? 30 : 20, { align: "center" });
+    //                 doc.setFontSize(10);
+    //                 doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+    //                 doc.autoTable({
+    //                     startY: logo.complete ? 40 : 30,
+    //                     head: [["Date", "Value (kW)"]],
+    //                     body: rows.map(r => [r.Date, r.Value]),
+    //                     styles: { overflow: 'linebreak' },
+    //                     columnStyles: {
+    //                         0: { cellWidth: 'auto' },
+    //                         1: { cellWidth: 'auto' }
+    //                     }
+    //                 });
+
+    //                 doc.save(fileName);
+    //             }
+    //         } catch (error) {
+    //             console.error("PDF generation error:", error);
+    //             alert("Failed to generate PDF. Please try another format or check console for details.");
+    //         }
+    //     } else {
+    //         try {
+    //             if (!window.XLSX) throw new Error("SheetJS library not loaded");
+                
+    //             const worksheet = XLSX.utils.json_to_sheet(rows);
+    //             const workbook = XLSX.utils.book_new();
+    //             XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    //             const wbout = XLSX.write(workbook, {
+    //                 bookType: format === "csv" ? "csv" : "xlsx",
+    //                 type: "array"
+    //             });
+
+    //             if (!window.saveAs) throw new Error("FileSaver.js not loaded");
+                
+    //             saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+    //         } catch (error) {
+    //             console.error("Excel/CSV generation error:", error);
+    //             alert("Failed to generate Excel/CSV file. Please check console for details.");
+    //         }
+    //     }
+    // }
+    
+//     window.downloadReport = function() {
+//     const start = document.getElementById("startDate").value;
+//     const end = document.getElementById("endDate").value;
+//     const format = document.getElementById("format").value;
+//     const now = new Date();
+//     const nowStr = now.toISOString().split("T")[0];
+//     const baseName = "Power_Consumption";
+
+//     // Use rawData which contains the detailed timestamps
+//     if (!window.rawData || window.rawData.length === 0) {
+//         alert("No data available to download. Please fetch data first.");
+//         return;
+//     }
+
+//     let fileName = start && end
+//         ? `${baseName}_${nowStr}_(${start}_to_${end}).${format}`
+//         : `${baseName}_${nowStr}.${format}`;
+        
+//     const logoURL = 'Public/img/kedlogo.png';
+
+//     // Format the data with full timestamps and 3 decimal places
+//     const rows = window.rawData.map(d => {
+//         const date = new Date(d.datetime);
+//         // Format as "YYYY-MM-DD HH:MM AM/PM"
+//         const formattedDate = date.toLocaleString('en-US', {
+//             year: 'numeric',
+//             month: '2-digit',
+//             day: '2-digit',
+//             hour: '2-digit',
+//             minute: '2-digit',
+//             hour12: true
+//         }).replace(/(\d+)\/(\d+)\/(\d+),?/, '$3-$1-$2');
+        
+//         return {
+//             DateTime: formattedDate,
+//             Value: d.value.toFixed(3) + " kW"
+//         };
+//     });
+
+//     if (format === "pdf") {
+//         try {
+//             const { jsPDF } = window.jspdf;
+//             const doc = new jsPDF();
+//             const logo = new Image();
+            
+//             logo.onload = function() {
+//                 try {
+//                     doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+//                 } catch (e) {
+//                     console.warn("Couldn't add logo:", e);
+//                 }
+//                 generatePdfContent(doc);
+//             };
+//             logo.onerror = function() {
+//                 generatePdfContent(doc);
+//             };
+//             logo.src = logoURL;
+            
+//             function generatePdfContent(doc) {
+//                 doc.setFontSize(14);
+//                 doc.text(`Power Consumption Report`, 105, logo.complete ? 30 : 20, { align: "center" });
+//                 doc.setFontSize(10);
+//                 doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+//                 doc.autoTable({
+//                     startY: logo.complete ? 40 : 30,
+//                     head: [["Date & Time", "Value"]],
+//                     body: rows.map(r => [r.DateTime, r.Value]),
+//                     styles: { 
+//                         overflow: 'linebreak',
+//                         cellPadding: 3,
+//                         fontSize: 8 
+//                     },
+//                     columnStyles: {
+//                         0: { cellWidth: 'auto' },
+//                         1: { cellWidth: 'auto' }
+//                     },
+//                     margin: { top: logo.complete ? 40 : 30 }
+//                 });
+
+//                 doc.save(fileName);
+//             }
+//         } catch (error) {
+//             console.error("PDF generation error:", error);
+//             alert("Failed to generate PDF. Please try another format.");
+//         }
+//     } else {
+//         try {
+//             // For Excel/CSV, use the raw data directly
+//             const exportData = window.rawData.map(d => ({
+//                 "Date & Time": new Date(d.datetime).toLocaleString('en-US', {
+//                     year: 'numeric',
+//                     month: '2-digit',
+//                     day: '2-digit',
+//                     hour: '2-digit',
+//                     minute: '2-digit',
+//                     second: '2-digit',
+//                     hour12: true
+//                 }),
+//                 "Value (kW)": parseFloat(d.value.toFixed(3))
+//             }));
+
+//             const worksheet = XLSX.utils.json_to_sheet(exportData);
+//             const workbook = XLSX.utils.book_new();
+//             XLSX.utils.book_append_sheet(workbook, worksheet, "Power Data");
+            
+//             const wbout = XLSX.write(workbook, {
+//                 bookType: format === "csv" ? "csv" : "xlsx",
+//                 type: "array"
+//             });
+            
+//             saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+//         } catch (error) {
+//             console.error("Excel/CSV generation error:", error);
+//             alert("Failed to generate Excel/CSV file.");
+//         }
+//     }
+// };
+
+window.downloadReport = function() {
+    const start = document.getElementById("startDate").value;
+    const end = document.getElementById("endDate").value;
+    const format = document.getElementById("format").value;
+    const now = new Date();
+    const nowStr = now.toISOString().split("T")[0];
+    const baseName = "Power_Consumption";
+    const slotPath = window.slotPath || "Point path not available";
+
+    if (!window.rawData || window.rawData.length === 0) {
+        alert("No data available to download. Please fetch data first.");
+        return;
+    }
+
+    let fileName = start && end
+        ? `${baseName}_${nowStr}_(${start}_to_${end}).${format}`
+        : `${baseName}_${nowStr}.${format}`;
+        
+    const logoURL = 'Public/img/kedlogo.png';
+
+    const rows = window.rawData.map(d => ({
+        DateTime: new Date(d.datetime).toLocaleString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        }).replace(/(\d+)\/(\d+)\/(\d+),?/, '$3-$1-$2'),
+        Value: d.value.toFixed(3) + " kW"
+    }));
+
+    if (format === "pdf") {
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const logo = new Image();
+            
+            logo.onload = function() {
+                // Add logo (top-left)
+                doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+                generatePdfContent(doc);
+            };
+            
+            logo.onerror = function() {
+                generatePdfContent(doc);
+            };
+            logo.src = logoURL;
+            
+            function generatePdfContent(doc) {
+                // Report title (centered)
+                doc.setFontSize(16);
+                const titleY = logo.complete ? 30 : 20;
+                doc.text(`Power Consumption Report`, 100, titleY, { align: "center" });
+                
+                // Slot path below title (left-aligned)
+                doc.setFontSize(10);
+                // doc.text(`Point: ${slotPath}`, 14, titleY + 18);
+                
+                // Generation timestamp (right-aligned)
+                doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+                // Create the table
+                doc.autoTable({
+                startY: titleY + 10, // Position below title and slot path
+                head: [["Value (kW)", "Date & Time"]],
+                body: rows.map(r => [r.Value, r.DateTime]),
+                styles: {
+                  overflow: 'linebreak',
+                  cellPadding: 3,
+                  fontSize: 12,
+                  halign: 'center',   // Horizontally center text
+                  valign: 'middle'    // Vertically center text
+                },
+                columnStyles: {
+                  0: { cellWidth: 'auto' },
+                  1: { cellWidth: 'auto' }
+                },
+                margin: { top: titleY + 20 }
+              });
+
+
+                doc.save(fileName);
+            }
+        } catch (error) {
+            console.error("PDF generation error:", error);
+            alert("Failed to generate PDF. Please try another format.");
+        }
+    } else {
+        try {
+            // For Excel/CSV - include slot path in each row
+            const exportData = window.rawData.map(d => ({
+                "Point Path": slotPath,
+                "Date & Time": new Date(d.datetime).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true
+                }),
+                "Value (kW)": parseFloat(d.value.toFixed(3))
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Power Data");
+            
+            const wbout = XLSX.write(workbook, {
+                bookType: format === "csv" ? "csv" : "xlsx",
+                type: "array"
+            });
+            
+            saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+        } catch (error) {
+            console.error("Excel/CSV generation error:", error);
+            alert("Failed to generate Excel/CSV file.");
+        }
+    }
+};
+
+    // Initialize the application
+    function initializeApp() {
+        // Set default dates (last 7 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+        
+        document.getElementById("startDate").valueAsDate = startDate;
+        document.getElementById("endDate").valueAsDate = endDate;
+        
+        initChart();
+        
+        document.getElementById("downloadBtn").addEventListener("click", downloadReport);
+        
+        // fetchData(); // Initial data load
+    }
+
+    // Start the app
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initializeApp();
+    } else {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    }
+});
+
+
+
+// // Main application code wrapped in require
+// console.log("Script started loading");
+// require(['baja!'], 
+// function(baja) {
+//     console.log("RequireJS dependencies loaded successfully");
+//   // console.log("baja:", !!baja, "jspdf:", !!jspdf, "jspdfAutotable:", !!jspdf-autotable);
+    
+//     // Global variables to store chart and data
+//     let chart;
+//     let root;
+//     let series;
+//     let dailyData = [];
+//     let rawData = [];
+//     let isDailyView = true;
+
+//     // Initialize chart with empty data
+//     function initChart() {
+//         console.log("Initializing chart...");
+//         try {
+//         //       if (!am5 || !am5xy) {
+//         //     throw new Error("am5 or am5xy is not loaded properly.");
+//         // }
+        
+//         root = am5.Root.new("chartdiv");
+//         // root.setThemes([am5themes.Animated.new(root)]);
+        
+//         chart = root.container.children.push(am5xy.XYChart.new(root, {
+//             panX: true, panY: true, wheelX: "panX", wheelY: "zoomX", pinchZoomX: true
+//         }));
+//             // console.log("Creating root element for chartdiv");
+//             // root = am5.Root.new("chartdiv");
+//             // console.log("Root created:", !!root);
+            
+//             // root.setThemes([am5themes.Animated.new(root)]);
+//             // console.log("Theme set");
+
+//             // chart = root.container.children.push(am5xy.XYChart.new(root, {
+//             //     panX: true, panY: true, wheelX: "panX", wheelY: "zoomX", pinchZoomX: true
+//             // }));
+//             console.log("Chart created:", !!chart);
+
+//             const xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+//                 baseInterval: { timeUnit: "day", count: 1 },
+//                 renderer: am5xy.AxisRendererX.new(root, {}),
+//                 tooltip: am5.Tooltip.new(root, {}),
+//                 dateFormats: {
+//                     day: "MMM dd",
+//                     week: "MMM dd",
+//                     month: "MMM yyyy",
+//                     year: "yyyy"
+//                 }
+//             }));
+//             console.log("X axis created");
+
+//             const yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+//                 renderer: am5xy.AxisRendererY.new(root, {}),
+//                 tooltip: am5.Tooltip.new(root, {}),
+//                 title: am5.Label.new(root, {
+//                     text: "Power Consumption (kW)",
+//                     rotation: -90,
+//                     y: am5.p50,
+//                     centerX: am5.p50
+//                 })
+//             }));
+//             console.log("Y axis created");
+
+//             series = chart.series.push(am5xy.LineSeries.new(root, {
+//                 name: "Power Consumption",
+//                 xAxis: xAxis,
+//                 yAxis: yAxis,
+//                 valueYField: "value",
+//                 valueXField: "date",
+//                 tooltip: am5.Tooltip.new(root, { 
+//                     labelText: isDailyView 
+//                         ? "{valueY} kW\n{date.format('MMM dd, yyyy')}" 
+//                         : "{valueY} kW\n{date.format('MMM dd, yyyy HH:mm:ss')}"
+//                 }),
+//                 stroke: am5.color("#3f51b5"),
+//                 fill: am5.color("#3f51b5")
+//             }));
+//             console.log("Series created");
+
+//             // Add cursor
+//             chart.set("cursor", am5xy.XYCursor.new(root, {}));
+//             console.log("Cursor added");
+
+//             // Add scrollbar
+//             chart.set("scrollbarX", am5.Scrollbar.new(root, {
+//                 orientation: "horizontal"
+//             }));
+//             console.log("Scrollbar added");
+
+//             // Add legend
+//             const legend = chart.children.push(am5.Legend.new(root, {
+//                 centerX: am5.p50,
+//                 x: am5.p50
+//             }));
+//             legend.data.setAll(chart.series.values);
+//             console.log("Legend added");
+
+//             // Set initial empty data
+//             series.data.setAll([]);
+//             console.log("Initial empty data set");
+//         } catch (e) {
+//             console.error("Error in initChart:", e);
+//         }
+//     }
+
+//     // Initialize default dates (last 7 days)
+//     // function initDates() {
+//     //     console.log("Initializing dates...");
+//     //     const endDate = new Date();
+//     //     const startDate = new Date();
+//     //     startDate.setDate(endDate.getDate() - 7);
+        
+//     //     console.log("Setting start date:", startDate);
+//     //     console.log("Setting end date:", endDate);
+//     //     document.getElementById("startDate").valueAsDate = startDate;
+//     //     document.getElementById("endDate").valueAsDate = endDate;
+//     // }
+
+//     // Fetch data from Niagara
+//     // function fetchData() {
+//     //     console.log("Fetching data...");
+//     //     const startDate = document.getElementById("startDate").value;
+//     //     const endDate = document.getElementById("endDate").value;
+//     //     console.log("Start date:", startDate, "End date:", endDate);
+        
+//     //     if (!startDate || !endDate) {
+//     //         console.error("Dates not selected");
+//     //         alert("Please select both start and end dates");
+//     //         return;
+//     //     }
+        
+//     //     // Reset data arrays
+//     //     dailyData = [];
+//     //     rawData = [];
+        
+//     //     // Determine if this is a default (daily) view or custom (detailed) view
+//     //     isDailyView = startDate !== endDate ? false : true;
+//     //     console.log("isDailyView:", isDailyView);
+        
+//     //     try {
+//     //         console.log("Modify query based on view type");
+//     //         const query = isDailyView 
+//     //             ? `local:|fox:|history:/sbi/Ramp?period=timeRange;start=${startDate}T23:59:00.000+05:30;end=${startDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`
+//     //             : `local:|fox:|history:/sbi/Ramp?period=timeRange;start=${startDate}T00:00:00.000+05:30;end=${endDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`;
+//     //         console.log("Query:", query);
+
+//     //         console.log("Making baja.Ord with query");
+//     //         baja.Ord.make(query)
+//     //             .get({
+//     //                 cursor: {
+//     //                     before: function() { console.log("Starting iteration..."); },
+//     //                     after: function() { console.log("Finished iteration."); },
+//     //                     each: function(row) { 
+//     //                         try {
+//     //                             console.log("Processing row:", row);
+//     //                             const timestamp = new Date(row.get('timestamp'));
+//     //                             const value = parseFloat(row.get('value'));
+//     //                             console.log(timestamp.toLocaleString() + ": " + value);
+                                
+//     //                             // Add to raw data
+//     //                             rawData.push({
+//     //                                 datetime: timestamp.toISOString(),
+//     //                                 value: value
+//     //                             });
+//     //                             console.log("Fetched result Data:", JSON.stringify(rawData, null, 2));
+//     //                             // For daily view, we only get one value per day (23:59)
+//     //                             if (isDailyView) {
+//     //                                 dailyData.push({
+//     //                                     date: timestamp.getTime(),
+//     //                                     value: value
+//     //                                 });
+//     //                             }
+//     //                         } catch (e) {
+//     //                             console.error("Error processing row:", e);
+//     //                         }
+//     //                     },
+//     //                     limit: 10000,
+//     //                     offset: 0
+//     //                 }
+//     //             })
+//     //             .then(() => {
+//     //                 console.log("Query completed successfully");
+//     //                 console.log("Raw data length:", rawData.length);
+//     //                 console.log("Daily data length:", dailyData.length);
+                    
+//     //                 // For detailed view, process raw data into chart format
+//     //                 if (!isDailyView) {
+//     //                     console.log("Processing detailed view data");
+//     //                     // Group by day and take last value (23:59)
+//     //                     const groupedData = {};
+//     //                     rawData.forEach(item => {
+//     //                         const dateKey = item.datetime.split('T')[0];
+//     //                         groupedData[dateKey] = {
+//     //                             date: new Date(item.datetime).setHours(23, 59, 59, 999),
+//     //                             value: item.value,
+//     //                             rawDatetime: item.datetime
+//     //                         };
+//     //                     });
+                        
+//     //                     // Convert to array
+//     //                     dailyData = Object.values(groupedData).sort((a, b) => a.date - b.date);
+//     //                     console.log("Grouped data length:", dailyData.length);
+//     //                 }
+                    
+//     //                 // Update the chart
+//     //                 if (series) {
+//     //                     console.log("Updating chart with data");
+//     //                     series.data.setAll(dailyData);
+//     //                 } else {
+//     //                     console.error("Series not initialized");
+//     //                 }
+//     //             })
+//     //             .catch((err) => {
+//     //                 console.error("Query failed:", err);
+                    
+//     //                 let errorMessage = "Failed to execute history query:\n" + err.message + 
+//     //                                 "\n\nTry checking:\n" +
+//     //                                 "1. The point path is correct\n" +
+//     //                                 "2. The point has history enabled\n" +
+//     //                                 "3. You have proper permissions";
+                    
+//     //                 console.error(errorMessage);
+//     //                 alert(errorMessage);
+//     //             });
+//     //     } catch (e) {
+//     //         console.error("Error in fetchData:", e);
+//     //         alert("An unexpected error occurred: " + e.message);
+//     //     }
+//     // }
+    
+//     function fetchData() {
+//     console.log("Fetching data...");
+//     const startDate = document.getElementById("startDate").value;
+//     const endDate = document.getElementById("endDate").value;
+    
+//     if (!startDate || !endDate) {
+//         alert("Please select both start and end dates");
+//         return;
+//     }
+    
+//     // Reset data arrays
+//     window.rawData = [];
+//     window.dailyData = [];
+//     window.fullDailyData = []; // Add this for downloadReport
+    
+//     isDailyView = startDate === endDate;
+    
+//     try {
+//         const query = isDailyView 
+//             ? `local:|fox:|history:/sbi/Ramp?period=timeRange;start=${startDate}T23:59:00.000+05:30;end=${startDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`
+//             : `local:|fox:|history:/sbi/Ramp?period=timeRange;start=${startDate}T00:00:00.000+05:30;end=${endDate}T23:59:59.999+05:30|bql:select timestamp as 'Timestamp',value as 'value'`;
+
+//         baja.Ord.make(query)
+//             .get({
+//                 cursor: {
+//                     each: function(row) { 
+//                         const timestamp = new Date(row.get('timestamp'));
+//                         const value = parseFloat(row.get('value'));
+                        
+//                         window.rawData.push({
+//                             datetime: timestamp,
+//                             value: value
+//                         });
+                        
+//                         if (isDailyView) {
+//                             window.dailyData.push({
+//                                 date: timestamp.getTime(),
+//                                 value: value
+//                             });
+//                         }
+//                     }
+//                 }
+//             })
+//             .then(() => {
+//                 console.log("Raw data length:", window.rawData.length);
+                
+//                 if (!isDailyView) {
+//                     // Process raw data into daily values (last value of each day)
+//                     const groupedByDate = {};
+                    
+//                     window.rawData.forEach(item => {
+//                         const dateKey = new Date(item.datetime).toISOString().split('T')[0];
+//                         groupedByDate[dateKey] = {
+//                             date: dateKey,
+//                             value: item.value,
+//                             rawDatetime: item.datetime
+//                         };
+//                     });
+                    
+//                     window.dailyData = Object.values(groupedByDate)
+//                         .sort((a, b) => new Date(a.date) - new Date(b.date))
+//                         .map(item => ({
+//                             date: new Date(item.date).getTime(),
+//                             value: item.value
+//                         }));
+                    
+//                     // Store full daily data for reports
+//                     window.fullDailyData = Object.values(groupedByDate)
+//                         .sort((a, b) => new Date(a.date) - new Date(b.date));
+//                 }
+                
+//                 console.log("Processed daily data length:", window.dailyData.length);
+                
+//                 if (series) {
+//                     series.data.setAll(window.dailyData);
+//                 }
+//             })
+//             .catch((err) => {
+//                 console.error("Query failed:", err);
+//                 alert("Error fetching data: " + err.message);
+//             });
+//     } catch (e) {
+//         console.error("Error in fetchData:", e);
+//         alert("An unexpected error occurred: " + e.message);
+//     }
+// }
+
+// function downloadReport() {
+// const start = document.getElementById("startDate").value;
+//     const end = document.getElementById("endDate").value;
+//     const format = document.getElementById("format").value;
+//     const now = new Date();
+//     const nowStr = now.toISOString().split("T")[0];
+//     const baseName = "Power_Consumption";
+
+//     // Ensure we have data to work with
+//     if (!window.fullDailyData || window.fullDailyData.length === 0) {
+//         alert("No data available to download. Please fetch data first.");
+//         return;
+//     }
+
+//     let fileName = start && end
+//         ? `${baseName}_${nowStr}_(${start}_to_${end}).${format}`
+//         : `${baseName}_${nowStr}.${format}`;
+        
+//         const logoURL = 'Public/img/kedlogo.png';
+
+//     let rows;
+//     if (start && end) {
+//         const s = new Date(start);
+//         const e = new Date(end);
+//         rows = window.fullDailyData
+//             .filter(d => {
+//                 const date = new Date(d.date);
+//                 return date >= s && date <= e;
+//             })
+//             .map(d => ({
+//                 Date: d.date,
+//                 Value: d.value
+//             }));
+//     } else {
+//         // For monthly view, group by month
+//         const monthlyGroups = {};
+//         window.fullDailyData.forEach(item => {
+//             const monthKey = new Date(item.date).toISOString().slice(0, 7);
+//             if (!monthlyGroups[monthKey]) {
+//                 monthlyGroups[monthKey] = {
+//                     date: monthKey,
+//                     values: []
+//                 };
+//             }
+//             monthlyGroups[monthKey].values.push(item.value);
+//         });
+        
+//         rows = Object.values(monthlyGroups).map(month => ({
+//             Date: month.date,
+//             Value: month.values.reduce((a, b) => a + b, 0) / month.values.length
+//         }));
+//     }
+
+//   if (format === "pdf") {
+//     try {
+//       const { jsPDF } = window.jspdf;
+//       if (!jsPDF) {
+//         throw new Error("jsPDF library not loaded");
+//       }
+      
+//       const doc = new jsPDF();
+//       const logo = new Image();
+      
+//       logo.onerror = () => {
+//         console.warn("Logo failed to load, continuing without it");
+//         generatePdfContent(doc);
+//       };
+      
+//       logo.src = logoURL;
+//       logo.onload = () => {
+//         try {
+//           doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+//           generatePdfContent(doc);
+//         } catch (e) {
+//           console.error("Error adding logo:", e);
+//           generatePdfContent(doc);
+//         }
+//       };
+      
+//       function generatePdfContent(doc) {
+//         doc.setFontSize(14);
+//         doc.text(`Power Consumption Report`, 105, logo.complete ? 30 : 20, { align: "center" });
+//         doc.setFontSize(10);
+//         doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+//         doc.autoTable({
+//           startY: logo.complete ? 40 : 30,
+//           head: [["Date", "Value"]],
+//           body: rows.map(r => [r.Date, r.Value]),
+//           styles: { overflow: 'linebreak' },
+//           columnStyles: {
+//             0: { cellWidth: 'auto' },
+//             1: { cellWidth: 'auto' }
+//           }
+//         });
+
+//         doc.save(fileName);
+//       }
+//     } catch (error) {
+//       console.error("PDF generation error:", error);
+//       alert("Failed to generate PDF. Please try another format or check console for details.");
+//     }
+//   } else {
+//     try {
+//       if (!window.XLSX) {
+//         throw new Error("SheetJS library not loaded");
+//       }
+      
+//       const worksheet = XLSX.utils.json_to_sheet(rows);
+//       const workbook = XLSX.utils.book_new();
+//       XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+//       const wbout = XLSX.write(workbook, {
+//         bookType: format === "csv" ? "csv" : "xlsx",
+//         type: "array"
+//       });
+
+//       if (!window.saveAs) {
+//         throw new Error("FileSaver.js not loaded");
+//       }
+      
+//       saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+//     } catch (error) {
+//       console.error("Excel/CSV generation error:", error);
+//       alert("Failed to generate Excel/CSV file. Please check console for details.");
+//     }
+//   }
+// }
+
+// // 1. Initialize jsPDF properly
+    
+    
+//     // 2. Ensure data is properly passed
+// //     function downloadReport() {
+// //         const start = document.getElementById("startDate").value;
+// //         const end = document.getElementById("endDate").value;
+// //         const format = document.getElementById("format").value;
+        
+// //         // Get the correct data based on view mode
+// //         const reportData = isDailyView ? dailyData : rawData;
+        
+// //         if (reportData.length === 0) {
+// //             alert("No data available to generate report. Please refresh data first.");
+// //             return;
+// //         }
+        
+// //         // Prepare data for export
+// //         let rows = reportData.map(item => ({
+// //             Date: isDailyView 
+// //                 ? new Date(item.date).toLocaleDateString() 
+// //                 : new Date(item.datetime || item.date).toLocaleString(),
+// //             Value: item.value
+// //         }));
+        
+// //         console.log("Generating PDF with data:", rows); // Verify data
+        
+// //         // Generate report based on format
+// //         if (format === "pdf") {
+// //             generatePDF(rows, `Power_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+// //         } else {
+// //             generateSpreadsheet(rows, `Power_Report_${new Date().toISOString().slice(0,10)}.${format}`, format);
+// //         }
+// //     }
+
+// //     // 3. Fixed PDF generation function
+// //     // function generatePDF(data, filename) {
+// //     //     try {
+// //     //         if (!data || data.length === 0) {
+// //     //             throw new Error("No data provided for PDF generation");
+// //     //         }
+// //     //         // jsPDF = window.jspdf?.jsPDF;
+// //     //         // Create new PDF instance
+// //     //         const { jsPDF } = window.jspdf;
+// //     //         const doc = new jsPDF();
+            
+// //     //         console.log("PDF document created");
+        
+// //     //     // Simple fallback content if autoTable fails
+// //     //     doc.text("Power Consumption Report", 10, 10);
+// //     //     let yPos = 20;
+        
+// //     //     data.forEach(item => {
+// //     //         doc.text(`${item.Date}: ${item.Value} kW`, 10, yPos);
+// //     //         yPos += 10;
+// //     //     });
+        
+// //     //     doc.save(filename);
+// //     //     console.log("PDF saved successfully");
+// //     //     } catch (e) {
+// //     //         console.error("PDF generation failed:", e);
+// //     //         alert(`PDF generation failed: ${e.message}`);
+// //     //     }
+// //     // }
+  
+// //   // const baseName = "Power_Consumption";
+
+// //   // // Conditional file name based on whether a date range is selected
+// //   // let fileName = start && end
+// //   //   ? `${baseName}_${nowStr}_(${start}_to_${end}).${format}`
+// //   //   : `${baseName}_${nowStr}.${format}`;
+
+// //     const logoURL = 'Public/img/kedlogo.png';
+// //     function generatePDF(data, filename) {
+// //     try {
+// //         if (!data || data.length === 0) {
+// //             throw new Error("No data provided for PDF generation");
+// //         }
+// //           const now = new Date();
+// //   const nowStr = now.toISOString().split("T")[0];
+// //         // Load jsPDF and AutoTable plugin
+        
+// //         const { jsPDF } = window.jspdf;
+// //         const doc = new jsPDF();
+    
+// //         const logo = new Image();
+// //         logo.src = logoURL;
+// //         logo.onload = () => {
+// //         doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+// //         doc.setFontSize(14);
+// //         doc.text(`Power Consumption Report`, 105, 30, { align: "center" });
+// //         doc.setFontSize(10);
+// //         doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+// //         const tableData = data.map(item => [
+// //             item.Date, 
+// //             `${item.Value} kW`
+// //         ]);
+// //         doc.autoTable({
+// //             head: [['Date', 'Power Consumption']], // Table headers
+// //             body: tableData,                       // Table data
+// //             startY: 20,                            // Start below title
+// //             theme: 'grid',                         // Style (grid, plain, etc.)
+// //             headStyles: { fillColor: '#2c3e50' },  // Header color
+// //         });
+// //         doc.save(fileName);
+// //         };
+// //         console.log("PDF saved successfully");
+// //     } catch (e) {
+// //         console.error("PDF generation failed:", e);
+// //         alert(`PDF generation failed: ${e.message}`);
+// //     }
+// // }
+
+//     // 4. Initialize the application
+//     function initializeApp() {
+//         // initDates();
+//         initChart();
+        
+//         document.getElementById("refreshBtn").addEventListener("click", fetchData);
+//         document.getElementById("downloadBtn").addEventListener("click", downloadReport);
+        
+//         fetchData(); // Initial data load
+//     }
+
+//     // Start the app
+//     if (document.readyState === 'complete' || document.readyState === 'interactive') {
+//         initializeApp();
+//     } else {
+//         document.addEventListener('DOMContentLoaded', initializeApp);
+//     }
+// });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Energy Dashboard</title>
+    <!-- Custom fonts for this template-->
+    <link
+      href="public/vendor/fontawesomeFree/css/all.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link href="public/fonts/Poppins/stylesheet.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Custom styles for this template-->
+    <link href="public/css/sb-admin-2.min.css" rel="stylesheet" />
+    <link href="public/css/custom.css" rel="stylesheet" type="text/css" />
+        <link href="Public/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+   
+        <script src="Public/vendor/pdf/jspdf.umd.min.js"></script>
+<script src="Public/vendor/pdf/jspdf.plugin.autotable.min.js"></script>
+<script src="Public/vendor/xlsx/xlsx.full.min.js"></script>
+<script src="Public/vendor/filesaver/FileSaver.min.js"></script>
+<script src="Public/vendor/htmlcanvas/html2canvas.min.js"></script>
+<style>
+    body {
+      background-color: #121212;
+      color: #f0f0f0;
+    }
+
+ .dropdown-menu {
+  position: absolute;
+  background-color: #333;
+  border-radius: 5px;
+  margin-top: 5px;
+  padding: 10px;
+  max-width: 90vw;
+  word-wrap: break-word;
+  overflow-x: auto;
+  /* Add these new properties */
+  right: 0;
+  left: auto;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+    .dropdown-item {
+      color: #f0f0f0;
+    }
+
+    .dropdown-item:hover {
+      background-color: #333;
+      color: #fff;
+    }
+
+    .modal-calendar {
+      display: none;
+      position: absolute;
+      background-color: #2b2b2b;
+      color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 9999;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      min-width: 250px;
+    }
+
+    input[type="date"] {
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 1px solid #444;
+    }
+
+    input[type="date"]:focus {
+      border-color: #888;
+      outline: none;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      border: none;
+    }
+    .dropdown-toggle::after {
+  display: none !important;
+}
+
+  </style>
+      
+  </head>
+
+  <body id="page-top" class="page-overview sidebar-toggled">
+    <div id="widget" style="display:none;"></div>
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+       
+      <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion toggled" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <div class="sidebar-brand d-flex align-items-center justify-content-center">
+          <img src="public/img/SBI-Profile.png" alt="logo" />
+        </div>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0" />
+        <!-- Nav Item - Charts -->
+        <!-- <li class="nav-item ">
+               <a class="nav-link" href="overview.html">
+                 <i class="fas fa-fw fa-chart-area"></i>
+                 <span>Overview</span></a>
+               </li> -->
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+          <a class="nav-link" href="newform.html">
+              <i class="fa-solid fa-rectangle-list"></i>
+              <span>Form</span></a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="index.html">
+              <i class="fas fa-fw fa-table"></i>
+              <span>Rack Monitoring</span></a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="report.html">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>Reports And Trends</span></a>
+      </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block" />
+        <!-- Sidebar Toggler (Sidebar) -->
+        <div class="text-center d-none d-md-inline">
+          <button class="rounded-circle border-0" id="sidebarToggle"></button>
+        </div>
+      </ul>
+      <!-- End of Sidebar -->
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <!-- Topbar -->
+          <nav
+            class="navbar navbar-expand navbar-light topbar mb-4 static-top shadow"
+          >
+            <!-- Sidebar Toggle (Topbar) -->
+            <button
+              id="sidebarToggleTop"
+              class="btn btn-link d-md-none rounded-circle mr-3"
+            >
+              <i class="fa fa-bars"></i>
+            </button>
+            <!-- Topbar Navbar -->
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item dropdown no-arrow mx-1">
+                <!-- <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="alertsDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <i class="fas fa-bell fa-fw"></i>
+                  <span class="badge badge-danger badge-counter">3+</span>
+                </a> -->
+                <!-- Dropdown - Alerts -->
+                <div
+                  class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="alertsDropdown"
+                >
+                  <!-- <h6 class="dropdown-header">Alerts Center</h6>
+                  <a
+                    class="dropdown-item d-flex align-items-center"
+                    href="server.html"
+                  > -->
+                    <!-- <div class="mr-3">
+                      <div class="icon-circle bg-primary">
+                        <i class="fas fa-file-alt text-white"></i>
+                      </div>
+                    </div> -->
+                    <div>
+                      <div class="small text-gray-500">November 4, 2020</div>
+                      <span class="font-weight-bold">Server issue</span>
+                    </div>
+                  </a>
+                  <a
+                    class="dropdown-item d-flex align-items-center"
+                    href="cabin.html"
+                  >
+                    <div class="mr-3">
+                      <div class="icon-circle bg-warning">
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="small text-gray-500">November 4, 2020</div>
+                      Rack Temperature is High
+                    </div>
+                  </a>
+                  <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="mr-3">
+                      <div class="icon-circle bg-warning">
+                        <i class="fas fa-exclamation-triangle text-white"></i>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="small text-gray-500">November 3, 2020</div>
+                      Warning: Switchboard - Generator Group
+                    </div>
+                  </a>
+                  <a
+                    class="dropdown-item text-center small text-gray-500"
+                    href="alarm-management.html"
+                    >Show All Alerts</a
+                  >
+                </div>
+              </li>
+              <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
+              <!-- Nav Item - User Information -->
+              <li class="nav-item dropdown no-arrow">
+                <a class="nav-link dropdown-toggle" href="#">
+                  <img class="img-scnd-logo" src="public/img/kedlogo.png" />
+                </a>
+              </li>
+              <!-- <div class="topbar-divider d-none d-sm-block"></div> -->
+              <li class="nav-item dropdown no-arrow">
+                <!-- <a
+                  class="nav-link dropdown-toggle"
+                  href="#"
+                  id="userDropdown"
+                  role="button"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small"
+                    >Supervisor</span
+                  >
+                  <img
+                    class="img-profile rounded-circle"
+                    src="https://source.unsplash.com/QAB-WJcbgJk/60x60"
+                  />
+                </a> -->
+                <!-- Dropdown - User Information -->
+                <div
+                  class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                  aria-labelledby="userDropdown"
+                >
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Settings
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    data-toggle="modal"
+                    data-target="#logoutModal"
+                  >
+                    <i
+                      class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"
+                    ></i>
+                    Logout
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </nav>
+          <!-- End of Topbar -->
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <div
+              class="d-sm-flex align-items-center justify-content-between mb-4"
+            >
+              <h1 class="m-0 font-weight-bold text-white text-primary">
+                Reports
+              </h1>
+              
+            </div>
+            
+            <!--</div>-->
+             <div class="row">
+        <!-- First Card -->
+        <div class="col-xl-6 col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">Power Consumption 1</h6>
+              <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" type="button" 
+                  data-toggle="dropdown" 
+                  aria-expanded="false"
+                  data-dropdown-id="dropdown1">
+                   <i class="fas fa-ellipsis-v" id="ellipsisIcon"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li><a class="dropdown-item select-dates-btn" href="#" data-dropdown-id="dropdown1"><i class="fas fa-calendar-alt me-2"></i><span class="date-label">Select Dates</span></a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="PDF"><i class="fas fa-file-pdf me-2"></i>Export as PDF</a></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="Excel"><i class="fas fa-file-excel me-2"></i>Export as Excel</a></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="CSV"><i class="fas fa-file-csv me-2"></i>Export as CSV</a></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="PNG"><i class="fas fa-file-image me-2"></i>Export as PNG</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item print-btn" href="#"><i class="fas fa-print me-2"></i>Print</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-area">
+                <div id="chartdiv"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Card -->
+        <div class="col-xl-6 col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">Power Consumption 2</h6>
+              <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle" type="button" data-dropdown-id="dropdown2" data-toggle="dropdown" aria-expanded="false">
+                   <i class="fas fa-ellipsis-v" id="ellipsisIcon"></i>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <li><a class="dropdown-item select-dates-btn" href="#" data-dropdown-id="dropdown2"><i class="fas fa-calendar-alt me-2"></i><span class="date-label">Select Dates</span></a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="PDF"><i class="fas fa-file-pdf me-2"></i>Export as PDF</a></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="Excel"><i class="fas fa-file-excel me-2"></i>Export as Excel</a></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="CSV"><i class="fas fa-file-csv me-2"></i>Export as CSV</a></li>
+                  <li><a class="dropdown-item export-btn" href="#" data-type="PNG"><i class="fas fa-file-image me-2"></i>Export as PNG</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item print-btn" href="#"><i class="fas fa-print me-2"></i>Print</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-area">
+                <div id="chartdiv2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+            <div class="row">
+              <!-- Area Chart -->
+              <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between position-relative">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            Rack Cooling Index
+                        </h6>
+                        <div id="exportChart"><i class="fa-solid fa-ellipsis"></i></div>
+            
+                        <!-- Export Options (Moved outside of heatmap container) -->
+                        <div id="exportMenu">
+                            <button onclick="exportChart('image/png')">Export PNG</button>
+                            <button onclick="exportCSV()">Export CSV</button>
+                            <button onclick="exportPDF()">Export PDF</button>
+                            <button onclick="printChart()">Print</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-area">
+                            <div id="heatmap_consumption"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+              <div class="col-xl-6 col-lg-6">
+                <div class="card shadow mb-4">
+                  <!-- Card Header - Dropdown -->
+                  <div
+                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
+                  >
+                    <h6 class="m-0 font-weight-bold text-primary">
+                      DC HYDERABAD SNAPSHOT AS ON JAN 2025
+                    </h6>
+                    <div id="exportButton"><i class="fa-solid fa-ellipsis"></i></div>
+                    <div id="exportOptions">
+                        <button onclick="exportToCSV()">Export CSV</button>
+                        <button onclick="exportToPDF()">Export PDF</button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    
+                    <div id="dataFAS">
+                      <table id="floorProperty" class="build-details">
+                          <thead>
+                              <tr>
+                                <th>Name</th>
+                                <th>Server Hall 1</th>
+                                <th>Server Hall 2</th>
+                                <th>Server Hall 3</th>
+                                <th>Server Hall 4</th>
+                                <th>Total</th>
+                                <th>Percentage</th>
+                              </tr>
+                          </thead>
+                          <tbody id="floorPropertyBody">
+                              <tr>
+                                  <td></td>
+                                  <td class="text-secondary"></td>
+                                  <td class="text-success"></td>
+                                  <td class="text-success"></td>
+                                  <td class="text-success"></td>
+                                  <td class="text-success"></td>
+                                  <td class="text-success"></td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Pie Chart -->
+            </div>
+           </div>
+          <!-- /.container-fluid -->
+        </div>
+        <!-- End of Main Content -->
+        <!-- Footer -->
+        <footer class="sticky-footer bg-dark">
+          <div class="container my-auto">
+            <div class="copyright text-center text-white my-auto">
+              <span>Designed And Developed By &copy Ked Technology</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+    
+ <div class="modal-calendar" id="calendarModal">
+    <div class="modal-content-calendar">
+      <h6>Select Date Range</h6>
+      <div class="mt-3">
+        <label>Start Date: <input type="date" id="startDate" class="form-control" /></label>
+        <label class="mt-2">End Date: <input type="date" id="endDate" class="form-control" /></label>
+      </div>
+      <div class="date-selection-buttons mt-3 text-end">
+        <button class="btn btn-secondary me-2" id="cancelDateSelection">Cancel</button>
+        <button class="btn btn-primary" id="applyDateSelection">Apply</button>
+      </div>
+    </div>
+  </div>
+
+    <!-- Bootstrap core JavaScript-->
+     <script src="Public/vendor/jquery/jquery.min.js"></script>
+     <script src="Public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+     <script src="Public/vendor/amchart/core.js"></script>
+      <script src="Public/vendor/amchart/charts.js"></script>
+    <script src="Public/vendor/amchart/index.js"></script>
+    <script src="Public/vendor/amchart/xy.js"></script>
+    <script src="Public/vendor/amchart/themes/animated.js"></script>
+    
+        <script type="text/javascript">
+    var require = {
+      paths: {
+        //pointing nmodule at /module is a Niagara convention, allowing us to
+        //refer to module resources without having RequireJS get hung up on
+        //the use of absolute paths everywhere.
+        "nmodule": "/module",
+        "baja": "/module/bajaScript/rc/plugin/baja",
+        "bajaScript": "/module/bajaScript/rc",
+        "bajaux": "/module/bajaux/rc",
+        "lex": "/module/js/rc/lex/lexplugin",
+        "log": "/module/js/rc/log/logPlugin",
+        "css": "/module/js/com/tridium/js/ext/require/css",
+
+        "jquery": "/module/js/rc/jquery/jquery",
+        "Handlebars": "/module/js/rc/handlebars/handlebars",
+        "Promise": "/module/js/rc/bluebird/bluebird",
+
+        // these are runtime dependencies for require-handlebars-plugin
+        "hbs": "/module/js/rc/require-handlebars-plugin/hbs",
+        "i18nprecompile": "/module/js/rc/require-handlebars-plugin/hbs/i18nprecompile",
+        "json2": "/module/js/rc/require-handlebars-plugin/hbs/json2",
+        "underscore": "/module/js/rc/underscore/underscore"
+      },
+
+      hbs: {
+        disableI18n: true
+      }
+    }
+  </script>
+     <script type="text/javascript"
+          data-main="/module/sbidcnew/rc/sbidcnew.run.js"
+          src="http://localhost/module/js/com/tridium/js/ext/require/require.min.js"></script>
+   <!-- Move these scripts to the head or before your custom scripts -->
+
+
+
+    <script>
+   document.addEventListener('DOMContentLoaded', function() {
+     
+      let currentDropdownId = null;
+      let currentDropdownMenu = null;
+      const calendarModal = document.getElementById("calendarModal");
+      
+    
+      const dropdowns = document.querySelectorAll('.dropdown');
+      dropdowns.forEach(dropdown => {
+        const button = dropdown.querySelector('.dropdown-toggle');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        if (button && menu) {
+          button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.classList.toggle('show');
+            
+            
+            document.querySelectorAll('.dropdown-menu').forEach(otherMenu => {
+              if (otherMenu !== menu) otherMenu.classList.remove('show');
+            });
+          });
+        }
+      });
+
+     
+      const dateButtons = document.querySelectorAll('.select-dates-btn');
+      if (dateButtons.length > 0) {
+        dateButtons.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            currentDropdownId = this.getAttribute('data-dropdown-id');
+            currentDropdownMenu = this.closest('.dropdown-menu');
+            
+           
+            const dropdown = this.closest('.dropdown');
+            if (dropdown) {
+              const dropdownRect = dropdown.getBoundingClientRect();
+              
+              calendarModal.style.display = "block";
+              calendarModal.style.top = `${dropdownRect.bottom + window.scrollY}px`;
+              calendarModal.style.left = `${dropdownRect.right - calendarModal.offsetWidth + window.scrollX}px`;
+            }
+          });
+        });
+      }
+
+      
+      const cancelBtn = document.getElementById("cancelDateSelection");
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          calendarModal.style.display = "none";
+        });
+      }
+
+     
+      const applyBtn = document.getElementById("applyDateSelection");
+      if (applyBtn) {
+        applyBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          const start = document.getElementById("startDate").value;
+          const end = document.getElementById("endDate").value;
+          
+          if (start && end) {
+           
+            const formattedStart = formatDate(start);
+            const formattedEnd = formatDate(end);
+            const dateRangeText = `${formattedStart} - ${formattedEnd}`;
+            
+            
+            if (currentDropdownId) {
+              const dateLabel = document.querySelector(`[data-dropdown-id="${currentDropdownId}"] .date-label`);
+              if (dateLabel) {
+                dateLabel.textContent = dateRangeText;
+              }
+              
+             
+              const dropdownButton = document.querySelector(`#dropdownButton${currentDropdownId.replace('dropdown', '')}`);
+              if (dropdownButton) {
+                const dropdownText = dropdownButton.querySelector('.dropdown-text');
+                const selectedDatesSpan = dropdownButton.querySelector('.selected-dates');
+                
+                if (dropdownText && selectedDatesSpan) {
+                  dropdownText.textContent = "Dates";
+                  selectedDatesSpan.textContent = dateRangeText;
+                  selectedDatesSpan.style.display = "inline";
+                }
+              }
+            }
+            
+            calendarModal.style.display = "none";
+            
+            
+            if (currentDropdownMenu) {
+              currentDropdownMenu.classList.add('show');
+            }
+          } else {
+            alert("Please select both start and end dates.");
+          }
+        });
+      }
+
+      
+      function formatDate(dateString) {
+        const [year, month, day] = dateString.split('-');
+        return `${month}/${day}/${year}`;
+      }
+
+    
+      const exportButtons = document.querySelectorAll('.export-btn');
+      if (exportButtons.length > 0) {
+        exportButtons.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const fileType = this.getAttribute('data-type');
+            const dropdownId = this.closest('.dropdown-menu').previousElementSibling.getAttribute('data-dropdown-id');
+            const dateLabel = document.querySelector(`[data-dropdown-id="${dropdownId}"] .date-label`);
+            
+            const dates = dateLabel ? dateLabel.textContent : 'No dates selected';
+            alert(`Downloading ${fileType} with selected dates: ${dates}`);
+            
+            
+            this.closest('.dropdown-menu').classList.remove('show');
+          });
+        });
+      }
+
+      // Handle print buttons for all dropdowns
+      const printButtons = document.querySelectorAll('.print-btn');
+      if (printButtons.length > 0) {
+        printButtons.forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            alert("Printing the report...");
+            this.closest('.dropdown-menu').classList.remove('show');
+          });
+        });
+      }
+
+      // Close dropdowns and modal when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.dropdown')) {
+          document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+          });
+        }
+        if (!e.target.closest('.modal-calendar') && !e.target.closest('.select-dates-btn')) {
+          calendarModal.style.display = "none";
+        }
+      });
+    });
+</script>
+    <script>
+     // Global variables for dates
+let startDate = '';
+let endDate = '';
+let fetchDataFunction = null;
+
+// Date picker functionality (outside Baja.js)
+// document.addEventListener('DOMContentLoaded', function() {
+//   let currentDropdownId = null;
+//   let currentDropdownInstance = null;
+//   const calendarModal = document.getElementById("calendarModal");
+//   let datesSelected = false;
+  
+//   // Initialize dropdowns
+//   const dropdownElements = document.querySelectorAll('.dropdown');
+//   const dropdownInstances = [];
+  
+//   dropdownElements.forEach(dropdownElement => {
+//     const dropdownInstance = new bootstrap.Dropdown(dropdownElement);
+//     dropdownInstances.push({
+//       element: dropdownElement,
+//       instance: dropdownInstance
+//     });
+//   });
+  
+//   // Date selection button handlers
+//   document.querySelectorAll('.select-dates-btn').forEach(btn => {
+//     btn.addEventListener('click', function(e) {
+//       e.preventDefault();
+//       e.stopPropagation();
+//       currentDropdownId = this.getAttribute('data-dropdown-id');
+//       datesSelected = false;
+      
+//       const parentDropdown = this.closest('.dropdown');
+//       currentDropdownInstance = dropdownInstances.find(
+//         item => item.element === parentDropdown
+//       )?.instance;
+      
+//       const dropdownRect = parentDropdown.getBoundingClientRect();
+      
+//       calendarModal.style.display = "block";
+//       calendarModal.style.top = `${dropdownRect.bottom + window.scrollY}px`;
+//       calendarModal.style.left = `${dropdownRect.right - 250}px`;
+//     });
+//   });
+
+//   // Cancel button
+//   document.getElementById("cancelDateSelection")?.addEventListener("click", function(e) {
+//     e.stopPropagation();
+//     calendarModal.style.display = "none";
+//     closeCurrentDropdown();
+//   });
+
+//   // Apply button - now calls the global fetchDataFunction
+//   document.getElementById("applyDateSelection")?.addEventListener("click", function(e) {
+//     e.stopPropagation();
+//     startDate = document.getElementById("startDate").value;
+//     endDate = document.getElementById("endDate").value;
+    
+//     if (startDate && endDate) {
+//       datesSelected = true;
+//       if (currentDropdownId) {
+//         const dateLabel = document.querySelector(`[data-dropdown-id="${currentDropdownId}"] .date-label`);
+//         if (dateLabel) {
+//           dateLabel.textContent = `${startDate} to ${endDate}`;
+//         }
+//       }
+//       calendarModal.style.display = "none";
+      
+//       // Call the fetch function if it's available
+//       if (fetchDataFunction) {
+//         fetchDataFunction(startDate, endDate);
+//       }
+      
+//       // Keep dropdown open
+//       if (currentDropdownInstance) {
+//         const dropdownMenu = currentDropdownInstance._menu;
+//         dropdownMenu.classList.add('show');
+//         currentDropdownInstance._element.setAttribute('aria-expanded', 'true');
+//       }
+//     } else {
+//       alert("Please select both start and end dates.");
+//     }
+//   });
+
+//   // Click outside handler
+//   document.addEventListener('click', function(e) {
+//     if (!e.target.closest('.modal-calendar') && !e.target.closest('.select-dates-btn')) {
+//       calendarModal.style.display = "none";
+      
+//       if (!datesSelected) {
+//         closeCurrentDropdown();
+//         resetDateSelection();
+//       }
+//     }
+    
+//     if (datesSelected && !e.target.closest('.dropdown')) {
+//       closeCurrentDropdown();
+//       datesSelected = false;
+//     }
+//   });
+
+//   // Reset button
+//   document.getElementById("resetDates")?.addEventListener("click", function(e) {
+//     e.stopPropagation();
+//     resetDateSelection();
+//     if (currentDropdownInstance) {
+//       const dateLabel = document.querySelector(`[data-dropdown-id="${currentDropdownId}"] .date-label`);
+//       if (dateLabel) {
+//         dateLabel.textContent = 'Select Dates';
+//       }
+//     }
+//   });
+
+//   function resetDateSelection() {
+//     document.getElementById("startDate").value = '';
+//     document.getElementById("endDate").value = '';
+    
+//     if (currentDropdownId) {
+//       const dateLabel = document.querySelector(`[data-dropdown-id="${currentDropdownId}"] .date-label`);
+//       if (dateLabel) {
+//         dateLabel.textContent = 'Select Dates';
+//       }
+//     }
+    
+//     datesSelected = false;
+//   }
+  
+//   function closeCurrentDropdown() {
+//     if (currentDropdownInstance) {
+//       currentDropdownInstance.hide();
+//       currentDropdownInstance = null;
+//     }
+//   }
+  
+//   // Export button handlers
+//   document.querySelectorAll('.export-btn').forEach(btn => {
+//     btn.addEventListener('click', function(e) {
+//       e.preventDefault();
+//       e.stopPropagation();
+      
+//       // Close the dropdown immediately when any format is clicked
+//       if (currentDropdownInstance) {
+//         currentDropdownInstance.hide();
+//         currentDropdownInstance = null;
+//       }
+      
+//       const format = this.getAttribute('data-type');
+//       if (window.downloadReport) {
+//         window.downloadReport(format);
+//       } else {
+//         alert("Export functionality not ready yet. Please try again.");
+//       }
+//     });
+//   });
+// });
+
+// Baja.js code
+require(['baja!'], function (baja) {
+  // Chart variables
+  let chart;
+  let series;
+  let isDailyView = false;
+  
+  // Initialize chart
+function initChart() {
+    const root = am5.Root.new("chartdiv");
+    root.setThemes([am5themes_Animated.new(root)]);
+    
+    const chart = root.container.children.push(
+      am5xy.XYChart.new(root, {
+        panX: true,
+        panY: true,
+        wheelX: "panX",
+        wheelY: "zoomX",
+        pinchZoomX: true
+      })
+    );
+    const cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+    cursor.lineY.set("visible", false);
+    
+    const xAxis = chart.xAxes.push(
+      am5xy.DateAxis.new(root, {
+        maxDeviation: 0.3,
+        baseInterval: {
+          timeUnit: "day",
+          count: 1
+        },
+        renderer: am5xy.AxisRendererX.new(root, {}),
+        tooltip: am5.Tooltip.new(root, {})
+      })
+    );
+    
+    const yAxis = chart.yAxes.push(
+      am5xy.ValueAxis.new(root, {
+        renderer: am5xy.AxisRendererY.new(root, {})
+      })
+    );
+    
+    series = chart.series.push(
+      am5xy.LineSeries.new(root, {
+        name: "Series",
+        xAxis: xAxis,
+        yAxis: yAxis,
+        valueYField: "value",
+        valueXField: "date",
+        tooltip: am5.Tooltip.new(root, {
+          labelText: "{valueY}"
+        })
+      })
+    );
+    
+    series.strokes.template.setAll({
+      strokeWidth: 2
+    });
+    
+    series.bullets.push(function() {
+      return am5.Bullet.new(root, {
+        sprite: am5.Circle.new(root, {
+          radius: 4,
+          fill: series.get("fill")
+        })
+      });
+    });
+    
+    chart.set("scrollbarX", am5.Scrollbar.new(root, {
+      orientation: "horizontal"
+    }));
+    
+    return chart;
+  }
+  
+  // Query for selected date range
+  function getDateRangeQuery(start, end) {
+    return `local:|fox:|history:/sbidcnew/SVR01?period=timeRange;start=${start}T00:00:00.000+05:30;end=${end}T23:59:00.000+05:30|bql:select timestamp as 'timestamp',value as 'value'`;
+  }
+  
+  // Default query for last 12 months
+  function getDefaultQuery() {
+    const end = new Date();
+    const start = new Date();
+    start.setMonth(start.getMonth() - 11);
+    start.setDate(30);
+    return getDateRangeQuery(formatDate(start), formatDate(end));
+  }
+  
+  // Fetch data - now available globally via fetchDataFunction
+  function fetchData(start, end, isDefault = false) {
+    console.log("Fetching data from", start, "to", end);
+    
+    window.rawData = [];
+    window.dailyData = [];
+    window.fullDailyData = [];
+    
+    isDailyView = start === end;
+    
+    const query = isDefault ? getDefaultQuery() : getDateRangeQuery(start, end);
+    
+    baja.Ord.make(query)
+      .get({
+        cursor: {
+          each: function(row) { 
+            const timestamp = new Date(row.get('timestamp'));
+            const value = parseFloat(row.get('value'));
+            
+            window.rawData.push({
+              datetime: timestamp,
+              value: value
+            });
+            console.log("Grouped data by date:", JSON.stringify(rawData, null, 2));
+            if (isDailyView) {
+              window.dailyData.push({
+                date: timestamp.getTime(),
+                value: value
+              });
+            }
+          }
+        }
+      })
+      .then(() => {
+        if (!isDailyView) {
+          // Process into daily values
+          const groupedByDate = {};
+          
+          window.rawData.forEach(item => {
+            const dateKey = new Date(item.datetime).toISOString().split('T')[0];
+            groupedByDate[dateKey] = {
+              date: dateKey,
+              value: item.value,
+              rawDatetime: item.datetime
+            };
+          });
+          
+          window.dailyData = Object.values(groupedByDate)
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .map(item => ({
+              date: new Date(item.date).getTime(),
+              value: item.value
+            }));
+        }
+        
+        if (series) {
+          series.data.setAll(window.dailyData);
+        }
+      })
+      .catch((err) => {
+        console.error("Query failed:", err);
+        alert("Error fetching data: " + err.message);
+      });
+  }
+
+  // Download report function
+window.downloadReport = function(format = "pdf") {
+    const now = new Date();
+    const nowStr = now.toISOString().split("T")[0];
+    const baseName = "Power_Consumption";
+    const logoURL = 'Public/img/kedlogo.png';
+
+    // Check if dates are selected
+    const hasDateSelection = startDate && endDate;
+    
+    let fileName = hasDateSelection
+        ? `${baseName}_${nowStr}_(${startDate}_to_${endDate}).${format}`
+        : `${baseName}_${nowStr}.${format}`;
+
+    // Function to fetch and process data for download
+    function fetchAndDownload() {
+        window.rawData = {};
+        serverHalls.forEach(hall => {
+            window.rawData[hall] = [];
+        });
+
+        const promises = serverHalls.map(hall => {
+            const query = `local:|fox:|history:/sbidcnew/${hall}?period=timeRange;start=${startDate}T00:00:00.000+05:30;end=${endDate}T23:59:00.000+05:30|bql:select timestamp as 'timestamp',value as 'value'`;
+            
+            return baja.Ord.make(query).get({
+                cursor: {
+                    each: function(row) { 
+                        const timestamp = new Date(row.get('timestamp'));
+                        const value = parseFloat(row.get('value'));
+                        
+                        window.rawData[hall].push({
+                            datetime: timestamp,
+                            value: value
+                        });
+                    }
+                }
+            });
+        });
+
+        Promise.all(promises)
+            .then(() => {
+                // Combine all data by timestamp
+                const combinedData = {};
+                
+                serverHalls.forEach(hall => {
+                    window.rawData[hall].forEach(item => {
+                        const timestamp = item.datetime.getTime();
+                        if (!combinedData[timestamp]) {
+                            combinedData[timestamp] = {
+                                datetime: item.datetime,
+                                values: {}
+                            };
+                        }
+                        combinedData[timestamp].values[hall] = item.value;
+                    });
+                });
+                
+                // Convert to array and sort by datetime
+                const sortedData = Object.values(combinedData).sort((a, b) => a.datetime - b.datetime);
+                
+                // Prepare rows for export - keep all data points
+                const rows = sortedData.map((item, index) => {
+                    const row = {
+                        Index: index + 1,
+                        "Date & Time": item.datetime.toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        }).replace(/(\d+)\/(\d+)\/(\d+),?/, '$3-$1-$2')
+                    };
+                    
+                    serverHalls.forEach((hall, i) => {
+                        row[`S${i+1} (kW)`] = (item.values[hall] || 0).toFixed(3);
+                    });
+                    
+                    return row;
+                });
+
+                generateFile(rows);
+            })
+            .catch((err) => {
+                console.error("Error fetching data for download:", err);
+                alert("Error fetching data for download: " + err.message);
+            });
+    }
+
+    // Function to generate the actual file
+    function generateFile(rows) {
+        if (format === "pdf") {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const logo = new Image();
+                
+                logo.onload = function() {
+                    // Add logo (top-left)
+                    doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+                    generatePdfContent(doc);
+                };
+                
+                logo.onerror = function() {
+                    generatePdfContent(doc);
+                };
+                logo.src = logoURL;
+                
+                function generatePdfContent(doc) {
+                    // Report title (centered)
+                    doc.setFontSize(16);
+                    const titleY = logo.complete ? 30 : 20;
+                    doc.text(`Power Consumption Report`, 100, titleY, { align: "center" });
+                    
+                    // Generation timestamp (right-aligned)
+                    doc.setFontSize(10);
+                    doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+                    // Date range (if selected)
+                    if (hasDateSelection) {
+                        doc.setFontSize(12);
+                        doc.text(`Date Range: ${startDate} to ${endDate}`, 14, titleY + 10);
+                    }
+
+                    // Create the table
+                    const headers = ["Index", hasDateSelection ? "Date & Time" : "Month", ...serverHalls.map((_, i) => `S${i+1} (kW)`)];
+                    const body = rows.map(row => [
+                        row.Index,
+                        row[hasDateSelection ? "Date & Time" : "Month"],
+                        ...serverHalls.map((_, i) => row[`S${i+1} (kW)`])
+                    ]);
+
+                    doc.autoTable({
+                        startY: titleY + (hasDateSelection ? 20 : 10),
+                        head: [headers],
+                        body: body,
+                        styles: {
+                            overflow: 'linebreak',
+                            cellPadding: 3,
+                            fontSize: 10,
+                            halign: 'center',
+                            valign: 'middle'
+                        },
+                        margin: { top: titleY + (hasDateSelection ? 20 : 10) },
+                        columnStyles: {
+                            0: { cellWidth: 'auto' },
+                            1: { cellWidth: hasDateSelection ? 40 : 30 }
+                        }
+                    });
+
+                    doc.save(fileName);
+                }
+            } catch (error) {
+                console.error("PDF generation error:", error);
+                alert("Failed to generate PDF. Please try another format.");
+            }
+        } else {
+            try {
+                // For Excel/CSV
+                const worksheet = XLSX.utils.json_to_sheet(rows);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Power Data");
+                
+                const wbout = XLSX.write(workbook, {
+                    bookType: format === "csv" ? "csv" : "xlsx",
+                    type: "array"
+                });
+                
+                saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+            } catch (error) {
+                console.error("Excel/CSV generation error:", error);
+                alert("Failed to generate Excel/CSV file.");
+            }
+        }
+    }
+
+    // Check if we need to fetch fresh data or use existing
+    if (hasDateSelection) {
+        // For date selection, fetch fresh data with no row limits
+        fetchAndDownload();
+    } else {
+        // For default view, use existing monthly data with month names
+        const hasData = serverHalls.every(hall => 
+            window.dailyData[hall] && window.dailyData[hall].length > 0
+        );
+        
+        if (!hasData) {
+            alert("No data available for all server halls. Please fetch data first.");
+            return;
+        }
+
+        // Prepare monthly data with month names
+        const monthlyData = {};
+        
+        serverHalls.forEach(hall => {
+            window.dailyData[hall].forEach(item => {
+                const monthKey = item.date.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long'
+                });
+                
+                if (!monthlyData[monthKey]) {
+                    monthlyData[monthKey] = {
+                        monthName: monthKey,
+                        date: item.date,
+                        values: {}
+                    };
+                }
+                monthlyData[monthKey].values[hall] = item.value;
+            });
+        });
+        
+        // Convert to array and sort by date
+        const sortedData = Object.values(monthlyData).sort((a, b) => a.date - b.date);
+        
+        // Prepare rows for export
+        const rows = sortedData.map((item, index) => {
+            const row = {
+                Index: index + 1,
+                "Month": item.monthName
+            };
+            
+            serverHalls.forEach((hall, i) => {
+                row[`S${i+1} (kW)`] = (item.values[hall] || 0).toFixed(3);
+            });
+            
+            return row;
+        });
+
+        generateFile(rows);
+    }
+};
+
+  
+  // Format date as YYYY-MM-DD
+  function formatDate(date) {
+    const d = new Date(date);
+    return d.toISOString().split('T')[0];
+  }
+  
+  // Initialize the application
+  function init() {
+    // Initialize chart
+    chart = initChart();
+    
+    // Make fetchData available globally
+    fetchDataFunction = fetchData;
+    
+    // Load default data
+    const end = new Date();
+    const start = new Date();
+    start.setMonth(start.getMonth() - 11);
+    start.setDate(30);
+    fetchData(formatDate(start), formatDate(end), true);
+  }
+  
+  // Start the application
+  init();
+});
+
+// require(['baja!'], function (baja) {
+//   // Chart variables
+//   let chart;
+//   let series = {}; // Object to hold all series
+//   let isDailyView = false;
+//   const serverHalls = ['SVR01', 'SVR02', 'SVR03', 'SVR04'];
+//   const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A']; // Different colors for each series
+  
+//   // Initialize chart
+//   // function initChart() {
+//   //   const root = am5.Root.new("chartdiv");
+//   //   root.setThemes([am5themes_Animated.new(root)]);
+    
+//   //   chart = root.container.children.push(
+//   //     am5xy.XYChart.new(root, {
+//   //       panX: true,
+//   //       panY: true,
+//   //       wheelX: "panX",
+//   //       wheelY: "zoomX",
+//   //       pinchZoomX: true
+//   //     })
+//   //   );
+    
+//   //   const cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+//   //   cursor.lineY.set("visible", false);
+    
+//   //   const xAxis = chart.xAxes.push(
+//   //     am5xy.DateAxis.new(root, {
+//   //       maxDeviation: 0.3,
+//   //       baseInterval: {
+//   //         timeUnit: "day",
+//   //         count: 1
+//   //       },
+//   //       renderer: am5xy.AxisRendererX.new(root, {}),
+//   //       tooltip: am5.Tooltip.new(root, {})
+//   //     })
+//   //   );
+    
+//   //   const yAxis = chart.yAxes.push(
+//   //     am5xy.ValueAxis.new(root, {
+//   //       renderer: am5xy.AxisRendererY.new(root, {})
+//   //     })
+//   //   );
+    
+//   //   // Create a series for each server hall
+//   //   serverHalls.forEach((hall, index) => {
+//   //     series[hall] = chart.series.push(
+//   //       am5xy.LineSeries.new(root, {
+//   //         name: hall,
+//   //         xAxis: xAxis,
+//   //         yAxis: yAxis,
+//   //         valueYField: "value",
+//   //         valueXField: "date",
+//   //         tooltip: am5.Tooltip.new(root, {
+//   //           labelText: `${hall}: {valueY}`
+//   //         }),
+//   //         stroke: am5.color(colors[index])
+//   //       })
+//   //     );
+      
+//   //     series[hall].strokes.template.setAll({
+//   //       strokeWidth: 2
+//   //     });
+      
+//   //     series[hall].bullets.push(function() {
+//   //       return am5.Bullet.new(root, {
+//   //         sprite: am5.Circle.new(root, {
+//   //           radius: 4,
+//   //           fill: series[hall].get("fill")
+//   //         })
+//   //       });
+//   //     });
+//   //   });
+    
+//   //   // Add legend
+//   //   const legend = chart.children.push(am5.Legend.new(root, {
+//   //     centerX: am5.p50,
+//   //     x: am5.p50
+//   //   }));
+//   //   legend.data.setAll(chart.series.values);
+    
+//   //   chart.set("scrollbarX", am5.Scrollbar.new(root, {
+//   //     orientation: "horizontal"
+//   //   }));
+    
+//   //   chart.logo.disabled = true;
+//   //   return chart;
+//   // }
+// am4core.useTheme(am4themes_animated);
+    
+//     // Chart variables - make sure this is declared at the top level
+//     window.charts = {}; // Global object to hold all chart instances
+//     // const serverHalls = ['SVR01', 'SVR02', 'SVR03', 'SVR04'];
+//     // const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A'];
+//     // let isDailyView = false;
+
+//     // Initialize a single chart
+//     function initChart(divId) {
+//         // Create chart instance
+//         let chart = am4core.create(divId, am4charts.XYChart);
+//         chart.paddingRight = 20;
+        
+//         // Create axes
+//         let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+//         dateAxis.renderer.minGridDistance = 60;
+//         dateAxis.renderer.labels.template.fill = am4core.color("#ffffff"); 
+        
+//         let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+//         valueAxis.renderer.labels.template.fill = am4core.color("#ffffff");
+        
+//         // Create series for each server hall
+//         serverHalls.forEach((hall, index) => {
+//             let series = chart.series.push(new am4charts.LineSeries());
+//             series.dataFields.dateX = "date";
+//             series.dataFields.valueY = hall;
+//             series.name = hall;
+//             series.tooltipText = "{name}: {valueY}";
+//             series.stroke = am4core.color(colors[index]);
+//             series.strokeWidth = 2;
+            
+//             // Add bullets
+//             let bullet = series.bullets.push(new am4charts.CircleBullet());
+//             bullet.circle.stroke = am4core.color("#fff");
+//             bullet.circle.strokeWidth = 2;
+//             bullet.circle.radius = 4;
+//         });
+        
+//         // Add cursor
+//         chart.cursor = new am4charts.XYCursor();
+//         chart.cursor.xAxis = dateAxis;
+//         chart.cursor.lineX.stroke = am4core.color("#ffffff");
+//         chart.cursor.lineY.stroke = am4core.color("#ffffff");
+        
+//         // Add legend
+//         chart.legend = new am4charts.Legend();
+//         chart.legend.labels.template.fill = am4core.color("#ffffff"); 
+//         chart.logo.disabled = true;
+        
+//         return chart;
+//     }
+
+//     // Initialize all charts
+//     function initCharts() {
+//         // Initialize main chart
+//         window.charts['chartdiv'] = initChart('chartdiv');
+        
+//         // Initialize additional charts if needed
+//         if (document.getElementById('chartdiv3')) {
+//             window.charts['chartdiv3'] = initChart('chartdiv3');
+//         }
+//         // Add more charts as needed...
+//     }
+
+//     // Fetch data function
+//     window.fetchData = function(start, end, isDefault = false) {
+//         console.log("Fetching data from", start, "to", end);
+        
+//         window.rawData = {};
+//         window.dailyData = {};
+//         serverHalls.forEach(hall => {
+//             window.rawData[hall] = [];
+//             window.dailyData[hall] = [];
+//         });
+        
+//         isDailyView = start === end;
+        
+//         const promises = serverHalls.map(hall => {
+//             const query = `local:|fox:|history:/sbidcnew/${hall}?period=timeRange;start=${start}T00:00:00.000+05:30;end=${end}T23:59:00.000+05:30|bql:select timestamp as 'timestamp',value as 'value'`;
+            
+//             return baja.Ord.make(query).get({
+//                 cursor: {
+//                     each: function(row) { 
+//                         const timestamp = new Date(row.get('timestamp'));
+//                         const value = parseFloat(row.get('value'));
+                        
+//                         window.rawData[hall].push({
+//                             datetime: timestamp,
+//                             value: value
+//                         });
+                        
+//                         if (isDailyView) {
+//                             window.dailyData[hall].push({
+//                                 date: timestamp,
+//                                 value: value
+//                             });
+//                         }
+//                     }
+//                 }
+//             });
+//         });
+        
+//         Promise.all(promises)
+//             .then(() => {
+//                 if (!isDailyView) {
+//                     serverHalls.forEach(hall => {
+//                         const groupedByDate = {};
+                        
+//                         window.rawData[hall].forEach(item => {
+//                             const dateKey = item.datetime.toISOString().split('T')[0];
+//                             groupedByDate[dateKey] = {
+//                                 date: new Date(dateKey),
+//                                 value: item.value
+//                             };
+//                         });
+                        
+//                         window.dailyData[hall] = Object.values(groupedByDate).sort((a, b) => a.date - b.date);
+//                     });
+//                 }
+                
+//                 // Prepare combined data
+//                 const combinedData = [];
+//                 const allDates = new Set();
+                
+//                 serverHalls.forEach(hall => {
+//                     window.dailyData[hall].forEach(item => {
+//                         allDates.add(item.date.getTime());
+//                     });
+//                 });
+                
+//                 Array.from(allDates).sort().forEach(timestamp => {
+//                     const dataPoint = { date: new Date(timestamp) };
+//                     serverHalls.forEach(hall => {
+//                         const hallData = window.dailyData[hall].find(item => 
+//                             item.date.getTime() === timestamp
+//                         );
+//                         dataPoint[hall] = hallData ? hallData.value : null;
+//                     });
+//                     combinedData.push(dataPoint);
+//                 });
+                
+//                 // Update all charts
+//                 Object.keys(window.charts).forEach(divId => {
+//                     if (window.charts[divId]) {
+//                         window.charts[divId].data = combinedData;
+//                     }
+//                 });
+//             })
+//             .catch((err) => {
+//                 console.error("Query failed:", err);
+//                 alert("Error fetching data: " + err.message);
+//             });
+//     };
+
+//     // Initialize the application
+//     function init() {
+//         initCharts();
+        
+//         // Load default data
+//         const end = new Date();
+//         const start = new Date();
+//         console.log(start + end );
+//         start.setMonth(start.getMonth() - 11);
+//         end.setMonth(end.getMonth()-0);
+//         start.setDate(30);
+//         end.setDate(30)
+        
+//         window.fetchData(
+//             formatDate(start), 
+//             formatDate(end), 
+//             true
+//         );
+//     }
+    
+
+//   // Download report function
+//   window.downloadReport = function(format = "pdf") {
+//     const now = new Date();
+//     const nowStr = now.toISOString().split("T")[0];
+//     const baseName = "Power_Consumption";
+    
+//     // Check if we have data for all server halls
+//     const hasData = serverHalls.every(hall => 
+//       window.rawData[hall] && window.rawData[hall].length > 0
+//     );
+    
+//     if (!hasData) {
+//       alert("No data available for all server halls. Please fetch data first.");
+//       return;
+//     }
+
+//     let fileName = startDate && endDate
+//       ? `${baseName}_${nowStr}_(${startDate}_to_${endDate}).${format}`
+//       : `${baseName}_${nowStr}.${format}`;
+      
+//     const logoURL = 'Public/img/kedlogo.png';
+
+//     // Combine all data by timestamp
+//     const combinedData = {};
+    
+//     serverHalls.forEach(hall => {
+//       window.rawData[hall].forEach(item => {
+//         const timestamp = item.datetime.getTime();
+//         if (!combinedData[timestamp]) {
+//           combinedData[timestamp] = {
+//             datetime: item.datetime,
+//             values: {}
+//           };
+//         }
+//         combinedData[timestamp].values[hall] = item.value;
+//       });
+//     });
+    
+//     // Convert to array and sort by datetime
+//     const sortedData = Object.values(combinedData).sort((a, b) => a.datetime - b.datetime);
+    
+//     // Prepare rows for export
+//     const rows = sortedData.map((item, index) => {
+//       const row = {
+//         Index: index + 1,
+//         "Date & Time": item.datetime.toLocaleString('en-US', {
+//           year: 'numeric',
+//           month: '2-digit',
+//           day: '2-digit',
+//           hour: '2-digit',
+//           minute: '2-digit',
+//           hour12: true
+//         }).replace(/(\d+)\/(\d+)\/(\d+),?/, '$3-$1-$2')
+//       };
+      
+//       serverHalls.forEach(hall => {
+//         row[`${hall} (kW)`] = (item.values[hall] || 0).toFixed(3);
+//       });
+      
+//       return row;
+//     });
+
+//     if (format === "pdf") {
+//       try {
+//         const { jsPDF } = window.jspdf;
+//         const doc = new jsPDF();
+//         const logo = new Image();
+        
+//         logo.onload = function() {
+//           // Add logo (top-left)
+//           doc.addImage(logo, 'PNG', 10, 10, 30, 10);
+//           generatePdfContent(doc);
+//         };
+        
+//         logo.onerror = function() {
+//           generatePdfContent(doc);
+//         };
+//         logo.src = logoURL;
+        
+//         function generatePdfContent(doc) {
+//           // Report title (centered)
+//           doc.setFontSize(16);
+//           const titleY = logo.complete ? 30 : 20;
+//           doc.text(`Power Consumption Report`, 100, titleY, { align: "center" });
+          
+//           // Generation timestamp (right-aligned)
+//           doc.setFontSize(10);
+//           doc.text(`Generated: ${now.toLocaleString()}`, 200, 10, { align: "right" });
+
+//           // Create the table
+//           const headers = ["Index", "Date & Time", ...serverHalls.map(hall => `${hall} (kW)`)];
+//           const body = rows.map(row => [
+//             row.Index,
+//             row["Date & Time"],
+//             ...serverHalls.map(hall => row[`${hall} (kW)`])
+//           ]);
+
+//           doc.autoTable({
+//             startY: titleY + 10,
+//             head: [headers],
+//             body: body,
+//             styles: {
+//               overflow: 'linebreak',
+//               cellPadding: 3,
+//               fontSize: 10, // Smaller font to fit all columns
+//               halign: 'center',
+//               valign: 'middle'
+//             },
+//             margin: { top: titleY + 20 }
+//           });
+
+//           doc.save(fileName);
+//         }
+//       } catch (error) {
+//         console.error("PDF generation error:", error);
+//         alert("Failed to generate PDF. Please try another format.");
+//       }
+//     } else {
+//       try {
+//         // For Excel/CSV
+//         const worksheet = XLSX.utils.json_to_sheet(rows);
+//         const workbook = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(workbook, worksheet, "Power Data");
+        
+//         const wbout = XLSX.write(workbook, {
+//           bookType: format === "csv" ? "csv" : "xlsx",
+//           type: "array"
+//         });
+        
+//         saveAs(new Blob([wbout], { type: "application/octet-stream" }), fileName);
+//       } catch (error) {
+//         console.error("Excel/CSV generation error:", error);
+//         alert("Failed to generate Excel/CSV file.");
+//       }
+//     }
+//   };
+  
+//   // Format date as YYYY-MM-DD
+//   function formatDate(date) {
+//     const d = new Date(date);
+//     return d.toISOString().split('T')[0];
+//   }
+  
+//   // Initialize the application
+//   // function init() {
+//   //   // Initialize chart
+//   //   chart = initChart();
+    
+//   //   // Make fetchData available globally
+//   //   fetchDataFunction = fetchData;
+    
+//   //   // Load default data
+//   //   const end = new Date();
+//   //   const start = new Date();
+//   //   start.setMonth(start.getMonth() - 11);
+//   //   start.setDate(30);
+//   //   fetchData(formatDate(start), formatDate(end), true);
+//   // }
+  
+//   // Start the application
+//   init();
+// });
+</script>
+   
+  </body>
+</html>
